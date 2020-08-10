@@ -269,6 +269,10 @@ sample_n(dat_ingreso, 10) %>%
     knitr::kable()
 ```
 
+```
+## El objetivo de este ejercicio es predecir el ingreso según los parámetros.
+```
+
 Estos son algunos percentiles sobre toda la muestra:
 
 ```{r, fig.width=5, fig.asp=0.7}
