@@ -776,6 +776,8 @@ error_tbl <- error_tbl %>%
 error_tbl %>% mutate_if(is.numeric, round)
 ```
 
+<!-- - El error de entrenamiento nunca evalúa el desempeño de in modelo. Lo que debemos tomar en cuenta es el error de prueba. -->
+
 Ahora explicamos lo que observamos en este ejemplo.
 
 **Observaciones**
@@ -784,12 +786,15 @@ Ahora explicamos lo que observamos en este ejemplo.
 el peor con una muestra de prueba. La curva 3 aprende de la componente
 de ruido del modelo - lo cual realmente no es aprendizaje. Tiene una **brecha**
 grande entre entrenamiento y prueba.
+  <!-- - El problema es que está aprendiendo el ruido de los datos. -->
+  <!-- - El problema es que hay una brecha muy grande entre entre entrenamiento y prueba. -->
 
 - El modelo de la recta no es bueno en entrenamiento ni en prueba. Este modelo
 no tiene la capacidad para aprender de la señal en los datos.
 
 - El mejor modelo en la muestra de prueba es uno que está entre la recta y
 la curva 3 en términos de flexibilidad.
+  <!-- - Buscamos un punto virtuoso entre flexibilidad y rigidez. -->
 
 - Nuestra intuición para escoger el modelo 2 desde el principio se refleja
 en que *generaliza* mejor que los otros, y eso a su vez se refleja en
@@ -823,6 +828,10 @@ donde vemos que hay dos componentes que pueden hacer grande a $y-\hat{y}$:
     - La diferencia $f(x) - \hat{f}(x)$ está asociada a **error reducible**, pues
 depende de qué tan bien estimemos $f(X)$ con $\hat{f}(x)$
     - El error aleatorio $\epsilon$, asociado a  **error irreducible**.
+    <!-- - El error puede estar dado por el error aleatorio o porque mi función esté muy alejada de la función real. -->
+    <!-- - El error reduclible se puede dar cuando: -->
+    <!--   1. Tu "f gorro" no puede capturar patrones en los datos que están ahí. (ejemplo, los datos son curvos y tu haces recta) -->
+    <!--   2. Tu "f gorro" se va a lo loco con los puntos y captura el ruido. Si tu estimador varía mucho es probable que te de un buen resultado en algún momento. -->
 
 Queremos que nuestro modelo ajustado $\hat{f}$ esté cerca de $f$,
 pues no podemos hacer nada acerca de $\epsilon$. Hay
@@ -842,8 +851,25 @@ $$E((y-\hat{f}(x))^2) = \left[ E(\hat{f}(x)) - f(x) \right]^2 + Var(\hat{f}(x)) 
 donde el valor esperado es sobre el conjunto de entrenamiento ${\mathcal L}$ y $\epsilon$ (es decir, promediando sobre muestras de entrenamiento posibles).
 
 - El primer término le llamamos *sesgo* del predictor (si está consistentemente lejos de $f(x)$)
+  <!-- - La recta que evaluamos no tiene varianza, por más que corras con nuevos datos siempre saldrá igual. -->
+  <!-- - El problema que tiene es el sesgo -->
 - El segundo término es la *varianza* del predictor (qué tan sensible es a la muestra de entrenamiento)
+  <!-- - Esta se mide con respecto a distintas muestras de entrenamiento. -->
+  <!-- - La varianza la evalúas de distinas formas. Hay analíticos, numéricos, etc. -->
+  <!-- - La varianza es una ecuación teórica. -->
+  <!-- - Esto nos hace depender demasiado de los datos de entrenamiento -->
+  <!-- - A esta varianza caótica es a la que le llamamos "sobreajuste" -->
+  <!-- - Hay que tener cuidado de no irnos con la finta de que modelos sencillos tienen baja varianza. -->
 - Al tercer término le llamamos *error irreducible*.
+  <!-- - Expandiendo los valores de "x" puedes obtener menos ruido o entenderlo mejor. -->
+<!-- - El objetivo que buscaremos es equilibrar entre el sesgo y la varianza. -->
+<!--   - Necesitamos un modelo flexible y rígido a la vez. -->
+<!--   - Todos los problemas de optimización y aprendizaje de máquina son problemas de ricitos de oro. -->
+<!-- - Normalmente mejorar el sesgo afecta la varianza y viceversa. -->
+
+<!-- - Resumen de preceptos clave -->
+<!--   - Los resultados de entrenamiento no te dicen si un modelo es bueno o no. -->
+<!--   - Debes usar datos de prueba para comparar. -->
 
 Este resultado explica lo que observamos en nuestro ejemplo de simulación. En análisis
 predictivo, buscamos encontrar el mejor balance de estos dos tipos de errores (sesgo y varianza).
@@ -927,6 +953,7 @@ Ahora mostramos otro aspecto característico del aprendizaje supervisado. En pri
 lugar, el método general más usual para encontrar $\hat{f}$ es hacer lo siguiente:
 
 - Consideramos una familia de funciones $h$ candidatas para aproximar $f$
+  <!-- - Por ejemplo, usar todas las rectas posibles. -->
 - Calculamos el error de entrenamiento de cada posible $h$, y encontramos
 la $h$ que minimiza el error de entrenamiento (la que más se ajusta a los datos
 de entrenamiento). Tomamos $\hat{f} = h$.
@@ -972,6 +999,7 @@ considerablemente más difíciles de la teoría y los algoritmos):
 concentrados en esta dirección y típicamente no sucede sino hasta cuando comenzamos
 el trabajo de construir modelos predictivos (o al menos el trabajo de construir
 conjuntos de reglas).
+  <!-- - Hay que tener cuidado de no sobremuestrar antes de hacer modelos. -->
 
 - Para entender exactamente cuál es **el problema** que queremos resolver
 se requiere trabajo analítico considerable, y también trabajo en entender
