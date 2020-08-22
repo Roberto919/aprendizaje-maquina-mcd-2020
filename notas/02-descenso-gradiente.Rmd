@@ -11,8 +11,8 @@ cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2"
 
 Consideramos un problema de regresión con entradas $x=(x_1,x_2,\ldots, Xxp)$
 y respuesta $y$. Buscamos una familia de funciones $\mathcal F$ apropiada, de forma
-que dados unos datos de entrenamiento $\mathcal L$ escojamos una función 
-$\hat{f}\in \mathcal F$ para hacer predicciones. Nos gustaría que el 
+que dados unos datos de entrenamiento $\mathcal L$ escojamos una función
+$\hat{f}\in \mathcal F$ para hacer predicciones. Nos gustaría que el
 error predictivo $Err(\hat{f})$ sea bajo.
 
 
@@ -40,7 +40,9 @@ $x_1 = trafico\_peatones$, $x_2=trafico\_coches$. En una aproximación simple,
 podemos suponer que la tienda va a capturar una fracción de esos tráficos que
 se van a convertir en ventas. Quisieramos predecir con una función de la forma
 $$f_\beta (peatones, coches) = \beta_0 + \beta_1\, peatones + \beta_2\, coches.$$
-Por ejemplo, después de un análisis estimamos que 
+<!-- - Lo que podríamos hacer medir distintas variables y aplicar un sistema de puntos (lo que hicimos en Rebel) -->
+
+Por ejemplo, después de un análisis estimamos que
 
 - $\hat{\beta}_0 = 1000000$ (ventas base, si observamos tráficos igual a 0: es lo que va a atraer la tienda)
 - $\hat{\beta}_1 = (200)*0.02 = 4$ (capturamos 2\% del tráfico peatonal, y cada capturado gasta 200 pesos)
@@ -49,7 +51,7 @@ Entonces haríamos predicciones con
 $$\hat{f}(peatones, coches) = 1000000 +  4\,peatones + 3\, coches.$$
 El modelo lineal es más flexible de lo que parece en una primera aproximación, porque
 tenemos libertad para construir las variables de entrada a partir de nuestros datos.
-Por ejemplo, si tenemos una tercera variable 
+Por ejemplo, si tenemos una tercera variable
 $estacionamiento$ que vale 1 si hay un estacionamiento cerca o 0 si no lo hay, podríamos
 definir las variables
 - $x_1= peatones$
@@ -58,8 +60,8 @@ definir las variables
 - $x_4 = coches*estacionamiento$
 
 Donde la idea de agregar $x_4$ es que si hay estacionamiento entonces vamos
-a capturar una fracción adicional del trafico de coches, y la idea de $x_3$ es que 
-la tienda atraerá más nuevas visitas si hay un estacionamiento cerca. Buscamos 
+a capturar una fracción adicional del trafico de coches, y la idea de $x_3$ es que
+la tienda atraerá más nuevas visitas si hay un estacionamiento cerca. Buscamos
 ahora modelos de la forma
 $$f_\beta(x_1,x_2,x_3,x_4) = \beta_0 + \beta_1x_1 + \beta_2 x_2 + \beta_3 x_3 +\beta_4 x_4$$
 y podríamos obtener después de nuestra análisis las estimaciones
@@ -68,15 +70,17 @@ y podríamos obtener después de nuestra análisis las estimaciones
 - $\hat{\beta}_2 = (300)*0.005 = 1.5$
 - $\hat{\beta}_3 = 400000$ (ingreso adicional si hay estacionamiento por nuevo tráfico)
 - $\hat{\beta}_4 = (300)*0.02 = 6$ (ingreso adicional por tráfico de coches si hay estacionamiento)
- 
+
  y entonces haríamos predicciones con el modelo
 $$\hat{f} (x_1,x_2,x_3,x_4) = 800000 + 4\, x_1 + 1.5 \,x_2 + 400000\, x_3 +6\, x_4$$
+<!-- - En este segundo caso agregamos interacciones entre variables. -->
+
 
 ## Aprendizaje de coeficientes (ajuste)
 
 En el ejemplo anterior, los coeficientes fueron calculados (o estimados) usando
 experiencia, reglas, argumentos teóricos, o quizá otras fuentes de datos (como estudios
-o encuestas, conteos, etc.) 
+o encuestas, conteos, etc.)
 
 Ahora quisiéramos construir un algoritmo para
 aprender estos coeficientes del modelo
@@ -84,8 +88,8 @@ $$f_\beta (X_1) = \beta_0 + \beta_1 X_1 + \cdots \beta_p X_p$$
 a partir de una muestra de entrenamiento de datos históricos de tiendas que hemos
 abierto antes:
 $${\mathcal L}=\{ (x^{(1)},y^{(1)}),(x^{(2)},y^{(2)}), \ldots, (x^{(N)}, y^{(N)}) \}$$
-El criterio de ajuste (algoritmo de aprendizaje) más usual para regresión 
-lineal es el de **mínimos cuadrados**. 
+El criterio de ajuste (algoritmo de aprendizaje) más usual para regresión
+lineal es el de **mínimos cuadrados**.
 
 Construimos las predicciones (ajustados) para la muestra de entrenamiento:
 $$\hat{y}^{(i)} =  f_\beta (x^{(i)}) = \beta_0 + \beta_1 x_1^{(i)}+ \cdots + \beta_p x_p^{(i)}$$
@@ -95,7 +99,7 @@ Y consideramos las diferencias de los ajustados con los valores observados:
 $$e^{(i)} = y^{(i)} - f_\beta (x^{(i)})$$
 
 La idea entonces es minimizar la suma de los residuales al cuadrado, para
-intentar que la función ajustada pase lo más cercana a los puntos de entrenamiento 
+intentar que la función ajustada pase lo más cercana a los puntos de entrenamiento
 que sea posible. La función de pérdida que utilizamos más frecuentemente
 es la pérdida cuadrática, dada por:
 
@@ -134,7 +138,7 @@ casas %>% names
 
 ¿Cuáles deberían ser las variables más importantes? Debemos considerar
 al menos, el tamaño de las casas, la calidad de sus terminados, su ubicación,
-y tipo de casa (dos pisos, un piso, etc.). 
+y tipo de casa (dos pisos, un piso, etc.).
 Vamos a comenzar consierando tamaño, calidad y tipo de casa. Un modelo que no tiene mucho sentido
 empezar ajustando es
 
@@ -146,12 +150,12 @@ que podemos considerar es el modelo:
 
 $$Precio =  \left( \beta_0 + \beta_1 \,Calidad + \beta_2 \,Pisos\right) \, Tamaño$$
 Es decir, el precio por metro cuadrado varía con la calidad y el número de pisos. Podemos modelar
-entonces, en lugar del Precio, 
+entonces, en lugar del Precio,
 
 $$Precio_{m^2} = \beta_0 + \beta_1 \, Calidad + \beta_2 \, Pisos,$$
 
 y *este es un modelo lineal*. Para hacer predicciones del *Precio*, después multiplicamos
-la predicción del precio por metros cuadrados por *Tamaño*. 
+la predicción del precio por metros cuadrados por *Tamaño*.
 
 En primer lugar, es necesario separar los datos en al menos dos partes: una parte
 para entrenar y otra para evaluar y estimar el error de predicción.
@@ -168,11 +172,16 @@ de entrenamiento, y después aplicamos los mismos procesos a la muestra de prueb
 En nuestro caso, después de alguna exploración de los datos de entrenamiento
 notamos en primer lugar que hay
 ciertas ventas anormales:
+<!-- - Solo usamos los de entrenamiento porque no queremos guiar el ajuste. -->
 
 ```{r}
-train %>% group_by(SaleCondition) %>% 
+train %>% group_by(SaleCondition) %>%
   count()
 ```
+
+<!-- - Aquí podremos ver algunos datos problemáticos como "Partial" que nos meterán ruido al problema. -->
+
+
 Esta es una variable que no podemos utilizar, pues solo se sabe después de la venta.
 **Discute** razones por las que incluir esta variable en nuestras predicciones
 puede ser mala idea.
@@ -185,31 +194,35 @@ calc_cuantiles <- function(x, probs = c(0, 0.25, 0.5, 0.75, 1.0)){
   tibble(f = names(cuantiles), cuantil = cuantiles) %>% list
 }
 limpiar_casas <- function(datos){
-  datos_limpios <- datos %>% 
+  datos_limpios <- datos %>%
     mutate(tiene_piso_2 = as.numeric(`2ndFlrSF` > 0),
-           precio_miles = SalePrice / 1000, 
+           precio_miles = SalePrice / 1000,
            habitable_m2 = (GrLivArea * 0.092903),
            precio_m2_miles = precio_miles / habitable_m2,
            calidad = OverallQual - 6) %>%
-    filter(SaleCondition %in% c("Normal", "AdjLand")) %>% 
-    select(Id, tiene_piso_2:calidad) 
+    filter(SaleCondition %in% c("Normal", "AdjLand")) %>%
+    select(Id, tiene_piso_2:calidad)
   datos_limpios
-} 
+}
 datos_exp <- limpiar_casas(train)
-cuantiles_tbl <- datos_exp %>% 
-  summarise(across(where(is.numeric), calc_cuantiles)) %>% 
-  pivot_longer(cols = everything(), names_to = "variable", values_to = "datos") %>% 
-  unnest(cols = datos) 
-cuantiles_tbl %>% mutate(cuantil = round(cuantil)) %>% 
-  pivot_wider(names_from = f, values_from = cuantil) 
+cuantiles_tbl <- datos_exp %>%
+  summarise(across(where(is.numeric), calc_cuantiles)) %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "datos") %>%
+  unnest(cols = datos)
+cuantiles_tbl %>% mutate(cuantil = round(cuantil)) %>%
+  pivot_wider(names_from = f, values_from = cuantil)
 ```
 
 ```{r}
-graf_ent <- ggplot(datos_exp, aes(x = calidad, y = precio_m2_miles)) + 
-    geom_jitter(size=1, alpha = 0.5, width = 0.3, height = 0) + 
-    facet_wrap(~tiene_piso_2) 
+graf_ent <- ggplot(datos_exp, aes(x = calidad, y = precio_m2_miles)) +
+    geom_jitter(size=1, alpha = 0.5, width = 0.3, height = 0) +
+    facet_wrap(~tiene_piso_2)
 graf_ent
 ```
+<!-- - Aquí estamos graficando las dos variables que nos interesan: -->
+<!--   - Calidad. -->
+<!--   - Si tiene piso adicional o no. -->
+
 Una vez que estamos satisfechos por el momento con la exploración, podemos
 crear nuestro flujo de procesamiento:
 
@@ -218,7 +231,7 @@ train_tbl <- limpiar_casas(train)
 test_tbl <- limpiar_casas(test)
 # usamos recipes para este ejemplo, no necesitas usarlo
 casas_receta <- recipe(precio_m2_miles ~ ., train_tbl) %>%
-  update_role(Id, precio_miles, habitable_m2, new_role = "none") 
+  update_role(Id, precio_miles, habitable_m2, new_role = "none")
 casas_receta %>% summary()
 ```
 
@@ -227,7 +240,7 @@ casas_receta %>% summary()
 modelo_lineal <- linear_reg() %>%
   set_engine("lm")
 casas_flujo <- workflow() %>%
-  add_recipe(casas_receta) %>% 
+  add_recipe(casas_receta) %>%
   add_model(modelo_lineal)
 ```
 
@@ -241,7 +254,7 @@ ajuste
 Ahora podemos comparar ajustados con observados:
 
 ```{r}
-casas_ajustados <- predict(ajuste, train_tbl) %>% 
+casas_ajustados <- predict(ajuste, train_tbl) %>%
   bind_cols(train_tbl)
 casas_ajustados
 ```
@@ -254,15 +267,16 @@ graf_ent + geom_line(data = casas_ajustados, aes(y = .pred), colour = "red")
 Y evaluamos nuestras predicciones con el conjunto de prueba:
 
 ```{r}
-casas_pred <- predict(ajuste, test_tbl) %>% 
+casas_pred <- predict(ajuste, test_tbl) %>%
   bind_cols(test_tbl %>% select(precio_m2_miles))
 metricas <- metric_set(rmse, mae, mape)
-casas_pred %>% 
-  metricas(precio_m2_miles, .pred) %>% 
+casas_pred %>%
+  metricas(precio_m2_miles, .pred) %>%
   mutate(across(where(is.numeric), round, 2))
 ```
 **Pregunta**: ¿cómo se hizo el ajuste en este caso (el _engine_ que
 usamos fue *lm*)? ¿Qué algoritmo se usó para minimizar la suma de cuadrados?
+  <!-- - Lo que hicimos fue minimizar el problema de mínimos cuadrados.s -->
 
 ## Aprendizaje de parámetros para regresión lineal
 
@@ -272,12 +286,14 @@ de regresión lineal con error cuadrático. Hay varias maneras de hacer esto:
 - En el enfoque tradicional, se usan soluciones analíticas del problema de minimización
 y técnicas de álgebra lineal (por ejemplo, *lm* en R). Este método es efectivo para problemas chicos y medianos, utilizan álgebra lineal avanzada y son numéricamente
 probados. Estas técnicas se escalan en parte a problemas grandes, pero no es muy simple hacerlo.
+  <!-- - Para problemas en los que los datos quepan comodamente en tu memoria funciona bien. -->
 - Es posible utilizar algoritmos de optimización estándar. Hay una variedad grande de ellos,
 algunos muy sofisticados y poderosos, pero en muchos problemas grandes no necesariamente
 escalan apropiadamente.
 - En términos de escalamiento y simplicidad, el método de descenso en gradiente y sus
 variantes es muy efectivo
-para escalar a datos grandes y modelos más complejos (por ejemplo redes neuronales). 
+para escalar a datos grandes y modelos más complejos (por ejemplo redes neuronales).
+  <!-- - Este lo vamos a usar normalmente. -->
 
 Notamos que el problema de minimización para regresión no es particularmente difícil:
 
@@ -293,13 +309,15 @@ Aunque el problema de mínimos cuadrados se puede resolver analíticamente, o
 usando un optimizador avanzado de R, proponemos
 un método numérico básico que es efectivo y puede escalarse a problemas grandes
 de manera relativamente simple: **descenso en gradiente**, o descenso máximo.
+<!-- - Usando mínimos cuadrados normalmente no tendrás el problema de muchos mínimos falsos. -->
+<!-- - El descenso por gradiente (y sus métodos estocásticos) puede ser un método primitivo pero la ventaja es que es muy fácil, sencillo y escalable. -->
 
 ### Intro a descenso en gradiente {-}
 
 Supongamos que una función $h(x)$ es convexa y tiene un mínimo. La idea
 de descenso en gradiente es comenzar con un candidato inicial $z_0$ y calcular
 la derivada en $z^{(0)}$. Si $h'(z^{(0)})>0$, la función es creciente en $z^{(0)}$ y nos
-movemos ligeramente 
+movemos ligeramente
 a la izquierda para obtener un nuevo candidato $z^{(1)}$. si $h'(z^{(0)})<0$, la
 función es decreciente en $z^{(0)}$ y nos
 movemos ligeramente a la derecha  para obtener un nuevo candidato $z^{(1)}$. Iteramos este
@@ -343,11 +361,16 @@ descenso <- function(n, z_0, eta, h_deriv){
 z <- descenso(20, z_0, eta, h_deriv)
 z
 ```
+<!-- - La eta (tasa de aprendizaje) es la más importante. -->
+<!-- - La z_0 normalmente la empiezas en 0 y de ahí te mueves. -->
+<!--   - En otros problemas más complejos la seleccionas de manera aleatoria. -->
+  <!-- - La ventaja de usar "keras" es que se hace diferenciación automática. -->
+
 
 Y vemos que estamos cerca de la convergencia. Podemos graficar:
 
 ```{r}
-dat_iteraciones <- tibble(iteracion = 1:nrow(z), 
+dat_iteraciones <- tibble(iteracion = 1:nrow(z),
                               x = z[, 1], y = h(z[, 1]))
 ```
 
@@ -357,7 +380,7 @@ curva <- ggplot(tibble(x = seq(-4, 5, 0.1)), aes(x = x)) + stat_function(fun = h
      xlim(c(-4, 5))
 descenso_g <- curva +
     geom_point(data = dat_iteraciones, aes(x = x, y = y), col = "red", size = 3) +
-    transition_time(iteracion) + 
+    transition_time(iteracion) +
     theme_minimal(base_size = 20)
 animate(descenso_g)
 ```
@@ -389,14 +412,14 @@ descenso_3 <- curva +
     geom_point(data = dat, aes(x = x, y = y), col = "red", size = 3) +
     facet_wrap(~tipo, nrow = 1) + ylim(c(0, 50)) +
     transition_time(iteracion) +
-    labs(title = "Iteración {frame_time}") + 
+    labs(title = "Iteración {frame_time}") +
     theme_minimal(base_size = 20)
 animate(descenso_3, width = 1000, height = 300)
 ```
 
 
 ```{block2, type='comentario'}
-Es necesario ajustar el tamaño de paso para cada problema particular. Si la 
+Es necesario ajustar el tamaño de paso para cada problema particular. Si la
 convergencia es muy lenta, podemos incrementarlo. Si las iteraciones divergen,
 podemos disminuirlo
 ```
@@ -425,7 +448,7 @@ h <- function(z) {
 h_gr <- function(z_1,z_2) apply(cbind(z_1, z_2), 1, h)
 grid_graf <- expand.grid(z_1 = seq(-3, 3, 0.1), z_2 = seq(-3, 3, 0.1))
 grid_graf <- grid_graf %>%  mutate( val = apply(cbind(z_1,z_2), 1, h))
-gr_contour <- ggplot(grid_graf, aes(x = z_1, y = z_2, z = val)) + 
+gr_contour <- ggplot(grid_graf, aes(x = z_1, y = z_2, z = val)) +
   geom_contour(binwidth = 1.5, aes(colour = ..level..))
 gr_contour
 ```
@@ -448,7 +471,7 @@ grad_2 <- h_grad(c(1,1))
 eta <- 0.2
 gr_contour +
   geom_segment(aes(x = 0.0, xend = 0.0 - eta * grad_1[1], y = -2, yend = -2 - eta * grad_1[2]),
-    arrow = arrow(length = unit(0.2, "cm"))) + 
+    arrow = arrow(length = unit(0.2, "cm"))) +
   geom_segment(aes(x = 1, xend = 1 - eta * grad_2[1], y = 1, yend = 1 - eta*grad_2[2]),
     arrow = arrow(length = unit(0.2, "cm"))) + coord_fixed(ratio = 1)
 ```
@@ -461,13 +484,13 @@ inicial <- c(3, 1)
 iteraciones <- descenso(150, inicial , 0.1, h_grad)
 df_iteraciones <- data.frame(iteraciones) %>%
     mutate(iteracion = 1:nrow(iteraciones))
-graf_descenso_2 <- ggplot(data = df_iteraciones %>% filter(iteracion < 20)) + 
-  geom_contour(data = grid_graf, 
-               binwidth = 1.5, aes(x = z_1, y = z_2, z = val, colour = ..level..)) + 
+graf_descenso_2 <- ggplot(data = df_iteraciones %>% filter(iteracion < 20)) +
+  geom_contour(data = grid_graf,
+               binwidth = 1.5, aes(x = z_1, y = z_2, z = val, colour = ..level..)) +
   geom_point(aes(x=X1, y=X2), colour = 'red', size = 3)
 if(FALSE){
     library(gganimate)
-    graf_descenso_2 + 
+    graf_descenso_2 +
         labs(title = 'Iteración: {frame_time}') +
         transition_time(iteracion)
     anim_save(filename = "figuras/descenso_2.gif")
@@ -481,7 +504,7 @@ En este caso, para checar convergencia podemos monitorear el valor de la
 función objetivo:
 
 ```{r, fig.width=5, fig.height= 3.5}
-df_iteraciones <- df_iteraciones %>% 
+df_iteraciones <- df_iteraciones %>%
     mutate(h_valor = map2_dbl(X1, X2, ~ h(z  = c(.x,.y)))) # h no está vectorizada
 ggplot(df_iteraciones, aes(x = iteracion, y = h_valor)) + geom_point(size=1) +
     geom_line()
@@ -523,7 +546,7 @@ Entonces, si ponemos $u^{(i)}=\frac{1}{2}(y^{(i)} - f_\beta(x^{(i)}))^2$:
 
 
 $$\frac{\partial u^{(i)}}{\partial \beta_0} = -(y^{(i)} - f_\beta(x^{(i)}))$$
-y 
+y
 
 $$\frac{\partial u^{(i)}}{\partial \beta_j} = - x_j^{(i)}(y^{(i)} - f_\beta(x^{(i)}))$$
 
@@ -535,14 +558,14 @@ Y sumando todos los términos (uno para cada caso de entrenamiento):
 **Gradiente para regresión lineal**
 Sea $e^{(i)} =  y_{(i)} - f_{\beta} (x^{(i)})$. Entonces
 \begin{equation}
-  \frac{\partial L(\beta)}{\partial \beta_0} = - \frac{1}{N}\sum_{i=1}^N e^{(i)} 
+  \frac{\partial L(\beta)}{\partial \beta_0} = - \frac{1}{N}\sum_{i=1}^N e^{(i)}
   (\#eq:grad1)
 \end{equation}
 \begin{equation}
-  \frac{\partial L(\beta)}{\partial \beta_j} = - \frac{1}{N}\sum_{i=1}^N x_j^{(i)}e^{(i)} 
+  \frac{\partial L(\beta)}{\partial \beta_j} = - \frac{1}{N}\sum_{i=1}^N x_j^{(i)}e^{(i)}
   (\#eq:grad2)
 \end{equation}
-para $j=1,2,\ldots, p$. 
+para $j=1,2,\ldots, p$.
 ```
 
 Nótese que cada punto de entrenamiento contribuye
@@ -555,12 +578,12 @@ promedio, para intentar hacer el error total lo más chico posible.
 
 En este punto, podemos intentar una implementación simple basada en el código
 anterior para
-hacer descenso en gradiente para nuestro problema de regresión 
+hacer descenso en gradiente para nuestro problema de regresión
 (es un buen ejercicio). En lugar de eso, mostraremos cómo usar librerías ahora
-estándar para hacer esto. En particular usamos keras (con tensorflow), 
+estándar para hacer esto. En particular usamos keras (con tensorflow),
 que tienen la ventaja:
 
-- En tensorflow y keras no es necesario calcular las derivadas a mano. Utiliza 
+- En tensorflow y keras no es necesario calcular las derivadas a mano. Utiliza
 [diferenciación automática](https://en.wikipedia.org/wiki/Automatic_differentiation), que no
 es diferenciación numérica ni simbólica: se basa en la regla de la cadena y la codificación
 explícita de las derivadas de funciones elementales.
@@ -574,7 +597,7 @@ x_ent <- casas_receta %>% prep %>% juice %>% select(tiene_piso_2, calidad) %>% a
 y_ent <- casas_receta %>% prep %>% juice %>% pull(precio_m2_miles)
 n_entrena <- nrow(x_ent)
 crear_modelo <- function(lr = 0.05){
-    modelo_casas <- 
+    modelo_casas <-
         keras_model_sequential() %>%
         layer_dense(units = 1,        #una sola respuesta,
             activation = "linear",    # combinar variables linealmente
@@ -618,7 +641,7 @@ historia <- modelo_casas %>% fit(
 
 
 ```{r, fig.width =5, fig.height = 3.5}
-plot(historia, metrics = "mean_squared_error", smooth = FALSE) 
+plot(historia, metrics = "mean_squared_error", smooth = FALSE)
 ```
 
 El modelo parece todavía ir mejorando: puede dificil juzgar de esta gráfica.
@@ -646,24 +669,24 @@ En este ejemplo simple, una variable tiene desviación estándar
 10 y otra 1:
 
 ```{r}
-x1 <- rnorm(100, 0, 5) 
+x1 <- rnorm(100, 0, 5)
 x2 <- rnorm(100, 0, 1) +  0.1*x1
-y <- 0*x1 + 0*x2 + rnorm(100, 0, 0.1) 
+y <- 0*x1 + 0*x2 + rnorm(100, 0, 0.1)
 dat <- tibble(x1, x2,  y)
-rss <- function(beta)  mean((as.matrix(dat[, 1:2]) %*% beta - y)^2) 
-grid_beta <- expand.grid(beta1 = seq(-1, 1, length.out = 50), 
+rss <- function(beta)  mean((as.matrix(dat[, 1:2]) %*% beta - y)^2)
+grid_beta <- expand.grid(beta1 = seq(-1, 1, length.out = 50),
                          beta2 = seq(-1, 1, length.out = 50))
-rss_1 <- apply(grid_beta, 1, rss) 
+rss_1 <- apply(grid_beta, 1, rss)
 dat_x <- data.frame(grid_beta, rss_1)
-ggplot(dat_x, aes(x = beta1, y = beta2, z = rss_1)) + 
+ggplot(dat_x, aes(x = beta1, y = beta2, z = rss_1)) +
     geom_contour(binwidth = 0.5) +
-    coord_equal() 
+    coord_equal()
 ```
 
-En algunas direcciones el gradiente es muy grande, y en otras chico. 
+En algunas direcciones el gradiente es muy grande, y en otras chico.
 Esto implica que la convergencia puede ser muy lenta en algunas direcciones,
-puede diverger en otras, 
-y que hay que ajustar el paso $\eta > 0$ con cuidado, 
+puede diverger en otras,
+y que hay que ajustar el paso $\eta > 0$ con cuidado,
 dependiendo de dónde comiencen las iteraciones.
 
 Por ejemplo, con un tamaño de paso relativamente chico, damos unos saltos
@@ -684,7 +707,7 @@ grad_calc <- function(x_ent, y_ent){
 }
 grad_sin_norm <- grad_calc(dat[, 1:2, drop = FALSE], dat$y)
 iteraciones <- descenso(10, c(0, -0.25, -0.75), 0.02, grad_sin_norm)
-ggplot(dat_x) + 
+ggplot(dat_x) +
     geom_contour(aes(x = beta1, y = beta2, z = rss_1), binwidth = 0.5) +
     coord_equal() +
   geom_path(data = data.frame(iteraciones[, 2:3]), aes(x=X1, y=X2), colour = 'red') +
@@ -696,7 +719,7 @@ caso particular, subir más el tamaño de paso puede producir divergencia:
 
 ```{r}
 iteraciones <- descenso(10, c(0, -0.25, -0.75), 0.07, grad_sin_norm)
-ggplot(dat_x) + 
+ggplot(dat_x) +
     geom_contour(aes(x = beta1, y = beta2, z = rss_1), binwidth = 0.5) +
     coord_equal() +
   geom_path(data = data.frame(iteraciones[, 2:3]), aes(x=X1, y=X2), colour = 'red') +
@@ -721,25 +744,25 @@ Entonces escalamos antes de ajustar:
 x1_s = (x1 - mean(x1))/sd(x1)
 x2_s = (x2 - mean(x2))/sd(x2)
 dat <- data_frame(x1_s, x2_s,  y)
-rss <- function(beta)  mean((as.matrix(dat[, 1:2]) %*% beta - y)^2) 
-grid_beta <- expand.grid(beta1 = seq(-1, 1, length.out = 50), 
+rss <- function(beta)  mean((as.matrix(dat[, 1:2]) %*% beta - y)^2)
+grid_beta <- expand.grid(beta1 = seq(-1, 1, length.out = 50),
                          beta2 = seq(-1, 1, length.out = 50))
-rss_1 <- apply(grid_beta, 1, rss) 
+rss_1 <- apply(grid_beta, 1, rss)
 dat_x <- data.frame(grid_beta, rss_1)
-ggplot(dat_x, aes(x = beta1, y = beta2, z = rss_1)) + 
+ggplot(dat_x, aes(x = beta1, y = beta2, z = rss_1)) +
     geom_contour(binwidth = 0.5) +
-    coord_equal() 
+    coord_equal()
 ```
 
 Nótese que los coeficientes ajustados serán diferentes a los del caso no
-normalizado. 
+normalizado.
 
 Si normalizamos, obtenemos convergencia más rápida
 
 ```{r}
 grad_sin_norm <- grad_calc(dat[, 1:2, drop = FALSE], dat$y)
 iteraciones <- descenso(10, c(0, -0.25, -0.75), 0.5, grad_sin_norm)
-ggplot(dat_x) + 
+ggplot(dat_x) +
     geom_contour(aes(x = beta1, y = beta2, z = rss_1), binwidth = 0.5) +
     coord_equal() +
   geom_path(data = data.frame(iteraciones[, 2:3]), aes(x=X1, y=X2), colour = 'red') +
@@ -763,7 +786,7 @@ $${f}_\beta (X) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p,$$
 Consideramos el modelo con variables estandarizadas
 $${g}_{\beta^s} (X) = \beta_0^s + \beta_1^s Z_1 + \beta_2^s Z_2 + \cdots + \beta_p^s Z_p,$$
 
-Sustituyendo $Z_j = (X_j - \mu_j)/s_j,$ 
+Sustituyendo $Z_j = (X_j - \mu_j)/s_j,$
 
 $${g}_{\beta^s} (X) = (\beta_0^s - \sum_{j=1}^p \mu_j/s_j) + \frac{\beta_1^s}{s_j} X_1 + \frac{\beta_2^s}{s_2} X_2 + \cdots + \frac{\beta_p^s}{s_p} X_p,$$
 Y vemos que tiene la misma forma funcional de $f_\beta(X)$. Si la solución de mínimos cuadrados es única,
@@ -777,7 +800,7 @@ se requiere escalar los coeficientes por la $s_j$ correspondiente.
 
 #### Ejemplo {-}
 
-Repetimos nuestro modelo 
+Repetimos nuestro modelo
 
 ```{r}
 library(keras)
@@ -794,9 +817,9 @@ ajustar_casas <- function(modelo, x, y, n_epochs = 100){
 }
 modelo_casas_ns <- crear_modelo(0.07)
 modelo_casas_s <- crear_modelo(0.2)
-historia_s <- ajustar_casas(modelo_casas_s, x_ent_s, y_ent) %>% 
+historia_s <- ajustar_casas(modelo_casas_s, x_ent_s, y_ent) %>%
   mutate(tipo = "Estandarizar")
-historia_ns <- ajustar_casas(modelo_casas_ns, x_ent, y_ent) %>% 
+historia_ns <- ajustar_casas(modelo_casas_ns, x_ent, y_ent) %>%
   mutate(tipo = "Sin estandarizar")
 historia <- bind_rows(historia_ns, historia_s) %>%  filter(metric == "mean_squared_error")
 ggplot(historia, aes(x = epoch, y = value, colour = tipo)) +
@@ -825,12 +848,12 @@ importantes que debemos tomar en cuenta.
 
 En primer lugar, podemos separar la interpretación en dos modalidades:
 
-1. Entender cómo calcula nuestro modelo las predicciones. 
+1. Entender cómo calcula nuestro modelo las predicciones.
 2. Entender aspectos del fenóomeno de interés a través de nuestro modelo. Por ejemplo,
 interpretar un coeficiente positivo como
 
 Las interpretaciones del tipo 1 son en general simples para modelos lineales,
-y sirven para explicar la estructura del modelo. Para modelos más complicados es 
+y sirven para explicar la estructura del modelo. Para modelos más complicados es
 necesario usar herramientas más complejas (que veremos más adelante).
 
 Sin embargo, **las interpretaciones de tipo 2 están llenas de dificultades,
@@ -842,7 +865,7 @@ segundo sentido en una tarea muy difícil.
 
 Con datos observaciones (no experimentales), los modelos lineales
 también son _cajas negras_, pues es necesario entender la complejidad de los
-datos (generalmente alta complejidad) para interpretar correctamente 
+datos (generalmente alta complejidad) para interpretar correctamente
 los coeficientes.
 
 
@@ -859,18 +882,18 @@ modelo_casas <- lm( precio_m2_miles ~ 1 + calidad + tiene_piso_2 + habitable_100
 1000*(coef(modelo_casas) %>% round(2))
 ```
 
-- La ordenada al origen se interpreta como sigue: para calidad media (calidad = 6), 
+- La ordenada al origen se interpreta como sigue: para calidad media (calidad = 6),
 y tamaño promedio (habitable_100_m2_c = 0),
 en un una casa que no tiene 2 pisos, la predicción es de 1400 dólares por m2.
 - El coeficiente de *calidad*: dejando fijo *tiene_piso_2* y tamaño, la predicción de precio por m2 aumenta
 en 170 dólares adicionales por cada punto que sube la calidad.
 - El coeficiente de *tiene_piso_2*: dejando constante la calidad y el tamaño, la predicción de precio por m2
 baja en 260 dólares si la casa tiene 2 pisos en lugar de 1.
-- El coeficiente de *habitable_100_m2_c*: dejando constante la calidad y el número de pisos, 
+- El coeficiente de *habitable_100_m2_c*: dejando constante la calidad y el número de pisos,
 la predicción de precio por m2 baja en 270 dólares por cada 100 m2 adicionales de tamaño de la casa.
 
 Así podemos explicar cada predicción - considerando qué variables aportan positiva y cuáles
-negativamente a la predicción, cuando mantenemos el resto constante. 
+negativamente a la predicción, cuando mantenemos el resto constante.
 **El camino más seguro es limitarse a hacer este
 tipo de análisis de las predicciones**. Hablamos de entender la estructura predictiva
 del problema con los datos que tenemos - y no intentamos ir hacia la explicación
@@ -882,24 +905,24 @@ cuidados se estudian en un curso de regresión desde el punto de vista
 estadístico, por ejemplo:
 
 
-- Efectos no lineales (especificación incorrecta del modelo): si la 
+- Efectos no lineales (especificación incorrecta del modelo): si la
 estructura del problema es altamente no lineal,
-los coeficientes de un modelo lineal no tienen una interpretación clara en relación 
-al fenómeno. 
+los coeficientes de un modelo lineal no tienen una interpretación clara en relación
+al fenómeno.
 
 - La interpretación coeficiente a coeficiente no toma en cuenta la estructura
-de asociación de las $x's$. Rara vez *cambios marginales* en una variable 
+de asociación de las $x's$. Rara vez *cambios marginales* en una variable
 de entrada ocurren
 de manera independiente de las otras variables de entrada. Eso hace difícil de interpretar
 los coeficientes.
 
-- Variación muestral. Es necesario en primer lugar 
+- Variación muestral. Es necesario en primer lugar
 considerar la variación en nuestras estimaciones
-de los coeficientes para poder concluir acerca de su relación con el fenómeno (tratable desde punto de vista estadístico, pero hay que checar supuestos). 
+de los coeficientes para poder concluir acerca de su relación con el fenómeno (tratable desde punto de vista estadístico, pero hay que checar supuestos).
 
 
-Otros cuidados adicionales, aún más sutiles e importantes, se requieren si queremos hacer 
-afirmaciones causales: ¿qué pasaría si diseñáramos una intervención para cambiar una característica de las 
+Otros cuidados adicionales, aún más sutiles e importantes, se requieren si queremos hacer
+afirmaciones causales: ¿qué pasaría si diseñáramos una intervención para cambiar una característica de las
 unidades? ¿qué nos dice modelos acerca del cambio en la variable respuesta?
 
 - Variables omitidas: si nos faltan algunas variables cruciales en el fenómeno que nos
@@ -926,7 +949,7 @@ modelo nos puede decir de esta especificación incorrecta.
 
 En general, la recomendación es que las interpretaciones causales deben considerarse
 como preliminares (o *sugerencias*), y se requiere más análisis y consideraciones
-antes de poder tener interpretaciones causales sólidas. 
+antes de poder tener interpretaciones causales sólidas.
 
 ## Predicción e incertidumbre
 
@@ -943,17 +966,17 @@ que el error cuadrático tiene tamaño considerable.
 
 Por ejemplo: supongamos que estamos identificando clientes con valor alto (aquellos que
 predecimos que van a hacer compras grandes futuras) pues queremos diseñar una intervención
-para mejorar su satisfacción, mejorar su retención, o aumentar su valor de algún modo. Ahora 
+para mejorar su satisfacción, mejorar su retención, o aumentar su valor de algún modo. Ahora
 imaginemos que tenemos dos clientes, cuya predicción es
 igual a 10,000. Sin embargo, tenemos incertidumbre alta acerca del cliente A (podría ir de
 10 a 20 mil), mientras que para cliente B tenemos incertidumbre relativamente baja
 (por ejemplo, de 7 mil a 15 mil pesos). Si el tratamiento es costoso, puedes ser que
 preferamos tratar a B (si somos aversos al riesgo) en lugar de A.
 
-Otro ejemplo es si queremos hacer pronósticos de ventas 
+Otro ejemplo es si queremos hacer pronósticos de ventas
 o inventarios para tiendas individuales de una cadena
 de supermercados. En este caso, es difícil hacer planeación y evaluar el riesgo
-si solo tenemos predictores puntuales, y quisiéramos saber qué otros escenarios son 
+si solo tenemos predictores puntuales, y quisiéramos saber qué otros escenarios son
 consistentes con los datos, y cuánta incertidumbre tenemos en cada tienda individual. Aquí
 el error cuadrático es claramente insuficiente, pues el concepto de pérdidas y riesgos
 es mucho más complicado.
@@ -961,7 +984,7 @@ es mucho más complicado.
 En estos casos, es importante construir, en lugar de predicciones puntuales, **intervalos
 de predicción**. Hay muchos enfoques para construir estos intervalos: puedes estudiarlo
 en un curso estándar de regresión, regresión bayesiana (ve por ejemplo
-@GelmanHill), y también 
+@GelmanHill), y también
 existen métodos computacionales basados en simulación de aplicación más general.
 Siempre es mejor tener intervalos
 *construidos apropiadamente* que no tenerlos, pero tenemos que considerar que esto
@@ -973,7 +996,7 @@ requiere más esfuerzo y recursos, en particular:
 
 En caso de producir intervalos, es importante de cualquier forma checar directamente
 que nuestros rangos de incertidumbre son apropiados (para lo cual también es útil
-muestras de prueba independientes del entrenamiento). Sin muestras de prueba, 
+muestras de prueba independientes del entrenamiento). Sin muestras de prueba,
 puede ser muy difícil evaluar qué tan buenas son nuestras estimaciones de la incertidumbre.
 Casi todos los modelos tienen fallas en este sentido.
 
@@ -993,10 +1016,10 @@ ejemplo producimos intervalos de cobertura nominal del 95%. Con la muestra de pr
 checamos que estos intervalos estén bien calibrados:
 
 ```{r}
-casas_int <- predict(ajuste, test_tbl, type = "pred_int", level = 0.95) %>% 
-  bind_cols(predict(ajuste, test_tbl)) %>% 
-  bind_cols(test_tbl) %>% 
-  mutate(.pred_lower = .pred_lower * habitable_m2, 
+casas_int <- predict(ajuste, test_tbl, type = "pred_int", level = 0.95) %>%
+  bind_cols(predict(ajuste, test_tbl)) %>%
+  bind_cols(test_tbl) %>%
+  mutate(.pred_lower = .pred_lower * habitable_m2,
          .pred = .pred * habitable_m2,
          .pred_upper = .pred_upper * habitable_m2,)
 head(casas_int)
@@ -1011,9 +1034,8 @@ ggplot(casas_int, aes(x = .pred, ymin = .pred_lower, ymax = .pred_upper)) +
 La cubertura se ve apropiada. Resumimos con:
 
 ```{r}
-casas_int %>% 
-    mutate(cubre = precio_miles > .pred_lower & precio_miles < .pred_upper) %>% 
-    summarise(cobertura = mean(cubre), ee = sqrt(mean(cubre) * mean(1 - cubre) / n())) %>% 
+casas_int %>%
+    mutate(cubre = precio_miles > .pred_lower & precio_miles < .pred_upper) %>%
+    summarise(cobertura = mean(cubre), ee = sqrt(mean(cubre) * mean(1 - cubre) / n())) %>%
     mutate(across(where(is_numeric), round, 3))
 ```
-
