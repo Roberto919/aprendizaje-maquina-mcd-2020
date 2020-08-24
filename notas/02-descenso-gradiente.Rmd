@@ -661,6 +661,10 @@ lm(precio_m2_miles ~ calidad + tiene_piso_2, data = train_tbl) %>% coef
 
 ## Normalización de entradas
 
+<!-- - El punto de normalizar es hacer que las curvas de nivel sean parecidas, para que no tengamos saltos muy fuertes en una dirección y otros muy débiles. -->
+<!-- - Estandarizar no cambia el modelo, solo cambia los escalares. -->
+<!-- - La convergencia puede llegar a ser mucho más rápida estandarizando. -->
+
 La convergencia de descenso en gradiente (y también el desempeño numérico
 para otros algoritmos) puede dificultarse cuando las variables tienen escalas
 muy diferentes. Esto produce curvaturas altas en la función que queremos
@@ -842,6 +846,7 @@ coef(lm.fit(cbind(1, x_ent), y_ent))
 
 
 ## Interpretación de modelos lineales
+<!-- - En cierto sentido los modelos lineales también son cajas negras. -->
 
 Muchas veces se considera que la facilidad de interpretación es una fortaleza
 del modelo lineal. Esto es en parte cierto, pero hay algunas consideraciones
@@ -853,6 +858,10 @@ En primer lugar, podemos separar la interpretación en dos modalidades:
 2. Entender aspectos del fenómeno de interés a través de nuestro modelo. Por ejemplo,
 interpretar un coeficiente positivo como el efecto en nuevos datos de cambiar
 una variable que podemos manipular.
+
+<!-- - Hay patrones en los datos que son complicados y, por ende, hacen complicado de interpretar el modelo. -->
+<!-- - Generalmente ajustamos datos con muestras observaciones. Hay relaciones complejas entre las variables. -->
+<!-- - Los modelos de predicción son para predecir, no para explicar el fenómeno. -->
 
 Las interpretaciones del tipo 1 son en general simples para modelos lineales,
 y sirven para explicar la estructura del modelo. Para modelos más complicados es
@@ -869,7 +878,6 @@ Con datos observaciones (no experimentales), los modelos lineales
 también son _cajas negras_, pues es necesario entender la complejidad de los
 datos (generalmente alta complejidad) para interpretar correctamente
 los coeficientes.
-
 
 
 
