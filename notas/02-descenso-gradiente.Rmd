@@ -350,7 +350,7 @@ Ahora iteramos con $\eta = 0.4$ y valor inicial $z_0=5$
 z_0 <- 5
 eta <- 0.4
 descenso <- function(n, z_0, eta, h_deriv){
-  z <- matrix(0,n, length(z_0))
+  z <- matrix(0, n, length(z_0))
   z[1, ] <- z_0
   for(i in 1:(n-1)){
     # paso de descenso
