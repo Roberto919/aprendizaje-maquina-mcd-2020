@@ -1,5 +1,8 @@
 # Métodos locales y regresión lineal
 
+<!-- - El método de regresión lineal puede ser más conveniente que modelos más complejos. -->
+<!-- - Cuando tienes muchas variables de entrada puede ser bueno. -->
+
 Regresión lineal es un método muy simple, 
 y parecería que debería haber métodos más avanzados que lo superen fácilmente en la predicción.
 
@@ -15,6 +18,12 @@ $f(x)$ no sea lineal, y resulta que esta aproximación da buenos resultados. Est
 
 
 ## k vecinos más cercanos
+
+<!-- - Agarras grupos de puntos cercanos y sacas su promedio. -->
+<!-- - El término "k" se refiere al número de vecinos que tomarás. -->
+<!-- - Puedes pensar en hacer una estandarización de variables cuando estás en más de 1 dimensión -->
+<!-- - ¿Podríamos usar este método para todos los problemas? En realidad no es cierto, hay métodos que superan facilmente este método. El argumento base tiene que ver con la maldición de la dimensionalidad. -->
+<!-- - Un problema al que nos podemos enfrentar es tener que procesar todos los datos para poder hacer predicciones. -->
 
 Un método popular, con buen desempeño en varios ejemplos, 
 es el de k-vecinos más cercanos, 
@@ -130,6 +139,12 @@ Por los ejemplos anteriores, vemos que k-vecinos más cercanos puede considerars
 
 
 ## La maldición de la dimensionalidad {-}
+
+<!-- - En dimensiones altas el problema del sesgo y de la varianza que habíamos visto se exacerban. -->
+<!-- - Para que un punto quede cerca del origen, muchos puntos deben quedar cerca del origen. Es una probabilidad muy baja de que en todas las dimensiones quede cerca de un punto de interés. -->
+<!-- - Tener más dimensiones exige que tengas mucho más datos. -->
+<!-- Los problemas de dimensión alta se vuelven inhóspitos y poco intuitivos. -->
+
 El método de k-vecinos más cercanos funciona mejor cuando hay muchas $x$ cercanas a $x0$, de forma que el promedio sea estable (muchas $x$), y extrapolemos poco ($x$ cercanas).
 Cuando $k$ es muy chica, nuestras estimaciones son ruidosas, y cuando $k$ es grande y los vecinos están lejos, entonces estamos sesgando la estimación local con datos lejanos a nuestra región de interés.
 
@@ -198,6 +213,12 @@ se distribuyen de manera rala en el espacio de entradas.
 ```
 
 ## Regresión lineal en dimensión alta
+
+<!-- - En problemas de mucha dimensión, los modelos lineales pueden ser más nobles. Supera al de vecinos cercanos. -->
+<!-- - Si el supuesto de linealidad es adecuado, el modelo lineal puede funcionar muy bien. -->
+<!-- - Con la regresión lineal aprovechamos todos los datos, mientras que con vecinos cercanos no aprovechamos todos los datos. -->
+<!-- - La estructura y entendiendo los datos puedes construir modelos muy efectivos. -->
+<!-- - Es muy difícil comprobar el supuesto de linealidad. Más bien tienes que probar el modelo lineal y ver que tal funciona. -->
 
 Ahora intentamos algo similar con una función que es razonable aproximar
 con una función lineal:

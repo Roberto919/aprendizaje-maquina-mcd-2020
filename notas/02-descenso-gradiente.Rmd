@@ -988,6 +988,9 @@ por ejemplo).
 
 ## Predicción e incertidumbre
 
+<!-- - Tener intervalos de predicción mejora mucho el proceso de toma de decisiones. -->
+<!-- - Tenemos que hacer más trabajo para construir los intervalos predictivos. -->
+
 En todos los casos de arriba, vimos cómo hacer predicciones puntuales para minimizar
 el error de predicción. Como función de pérdida utilizamos el error cuadrático. Esto
 resulta en un problema tratable que se puede optimizar de manera escalable.
