@@ -447,8 +447,9 @@ h <- function(z) {
   z[1]^2 + z[2]^2 - z[1] * z[2]
 }
 h_gr <- function(z_1,z_2) apply(cbind(z_1, z_2), 1, h)
+
 grid_graf <- expand.grid(z_1 = seq(-3, 3, 0.1), z_2 = seq(-3, 3, 0.1))
-grid_graf <- grid_graf %>%  mutate( val = apply(cbind(z_1,z_2), 1, h))
+grid_graf <- grid_graf %>%  mutate( val = h_gr(z_1, z_2) )
 gr_contour <- ggplot(grid_graf, aes(x = z_1, y = z_2, z = val)) +
   geom_contour(binwidth = 1.5, aes(colour = ..level..))
 gr_contour
@@ -793,11 +794,11 @@ $${g}_{\beta^s} (X) = \beta_0^s + \beta_1^s Z_1 + \beta_2^s Z_2 + \cdots + \beta
 
 Sustituyendo $Z_j = (X_j - \mu_j)/s_j,$
 
-$${g}_{\beta^s} (X) = (\beta_0^s - \sum_{j=1}^p \mu_j/s_j) + \frac{\beta_1^s}{s_j} X_1 + \frac{\beta_2^s}{s_2} X_2 + \cdots + \frac{\beta_p^s}{s_p} X_p,$$
+$${g}_{\beta^s} (X) = (\beta_0^s - \sum_{j=1}^p \beta_j^s \mu_j/s_j) + \frac{\beta_1^s}{s_j} X_1 + \frac{\beta_2^s}{s_2} X_2 + \cdots + \frac{\beta_p^s}{s_p} X_p,$$
 Y vemos que tiene la misma forma funcional de $f_\beta(X)$. Si la solución de mínimos cuadrados es única,
 entonces una vez que ajustemos tenemos que tener $\hat{f}_\beta(X) = \hat{g}_{\beta^s} (X)$,
 lo que implica que
-$$\hat{\beta}_0 = \hat{\beta}_0^s -  \sum_{j=1}^p \hat{\beta}_0^s\mu_j/s_j$$ y
+$$\hat{\beta}_0 = \hat{\beta}_0^s -  \sum_{j=1}^p \hat{\beta}_j^s\mu_j/s_j$$ y
 $$\hat{\beta}_j = \hat{\beta}_j^s/s_j.$$
 
 Nótese que para pasar del problema estandarizado al no estandarizado simplemente
@@ -1007,9 +1008,9 @@ predecimos que van a hacer compras grandes futuras) pues queremos diseñar una i
 para mejorar su satisfacción, mejorar su retención, o aumentar su valor de algún modo. Ahora
 imaginemos que tenemos dos clientes, cuya predicción es
 igual a 10,000. Sin embargo, tenemos incertidumbre alta acerca del cliente A (podría ir de
-10 a 20 mil), mientras que para cliente B tenemos incertidumbre relativamente baja
-(por ejemplo, de 7 mil a 15 mil pesos). Si el tratamiento es costoso, puedes ser que
-preferamos tratar a B (si somos aversos al riesgo) en lugar de A.
+2 a 20 mil), mientras que para cliente B tenemos incertidumbre relativamente baja
+(por ejemplo, de 8 mil a 12 mil pesos). Si el tratamiento es costoso, puedes ser que
+preferamos tratar a B en lugar de A.
 
 Otro ejemplo es si queremos hacer pronósticos de ventas
 o inventarios para tiendas individuales de una cadena
@@ -1076,5 +1077,5 @@ casas_int %>%
     mutate(cubre = precio_miles > .pred_lower & precio_miles < .pred_upper) %>%
     summarise(cobertura = mean(cubre),
               ee = sqrt(mean(cubre) * mean(1 - cubre) / n())) %>%
-    mutate(across(where(is_numeric), round, 3))
+    mutate(across(where(is.numeric), ~ round(.x, 3)))
 ```
