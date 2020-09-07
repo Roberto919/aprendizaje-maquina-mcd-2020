@@ -569,6 +569,9 @@ En este punto hay muchas funciones que podríamos usar. Para simplificar la inte
 1. $h$ toma valores en $[0,1]$ es creciente y diferenciable
 2. $h(0) = 0.5$ (0 equivale a probabilidad 0.5, negativos dan probabilidades menores a 0.5 y positivos dan probabilidades mayores a 0.5)
 3. $h(-x)=1-h(x)$ (simetría). Por ejemplo, si $h(-2)=0.16$ entonces $h(2)= 1-0.16=0.84$. 
+<!-- - La función sigmoidal es un gran ejemplo de una función que podría funcionar. -->
+<!-- - Algunas funciones trigonométricas (tangente inversa) también podrían funcionar. -->
+<!-- - La función de distribución acumulada de la normal funciona muy bien (integral de una campana normal). -->
 
 Hay todavía muchas opciones. Una de las más simples es usar la función
 logística
@@ -577,6 +580,11 @@ logística
 La función logística está dada por
 $$h(x)=\frac{e^x}{1+e^x}$$
 ``` 
+<!-- - Esta función, cuando se evalúa en x=0 es 0.5 -->
+<!-- - Cuando se evalúa en infinito negativo la función tiende a 0. -->
+<!-- - Cuando se evalúa en infinito positivo el resultado de la función tiende a 1. -->
+<!-- - Aplicar esa "h" a la función significa evaluar el resultado de esta en la función logística (o la que se eliga para ajustar las probabilidades). -->
+
 
 ```{r, fig.width = 4, fig.asp =0.5}
 h <- function(x){exp(x)/(1+exp(x)) }
@@ -632,6 +640,7 @@ Ahora veremos cómo aprender los coeficientes con una muestra de entrenamiento. 
 general es :
 
 - Usamos la devianza de entrenamiento como medida de ajuste
+<!-- - Usamos "cuadrados" en regresión. Ahora vamos a usar devianza. -->
 - Usamos descenso en gradiente para minimizar esta devianza y aprender los coeficientes.
 
 
@@ -650,12 +659,11 @@ $$D(\beta) = -\frac{2}{N}\sum_{i=1}^N \log(p_{y^{(i)}} (x^{(i)})).$$
 
 Los **coeficientes estimados por regresión logística** están dados por
 $$\hat{\beta} = \arg\min_\beta D(\beta)$$
-
+<!-- - Debemos minimizar moviendo los parámetros. -->
 Para minimizar utilizaremos descenso en gradiente (aunque hay más opciones).
 
 La última expresión para $D(\beta)$ puede ser difícil de operar, pero podemos reescribir como:
 $$D(\beta) = -\frac{2}{N}\sum_{i=1}^N y^{(i)} \log(p_{1} (x^{(i)})) + (1-y^{(i)}) \log(p_{0} (x^{(i)})).$$ 
-
 
 Para hacer descenso en gradiente, necesitamos encontrar $\frac{\partial D}{\beta_j}$
 para $j=1,2,\ldots,p$.
@@ -693,6 +701,7 @@ $$\beta_{j}^{(k+1)} = \beta_j^{(k)} + {\eta}{\frac{2}{N}} \sum_{i=1}^N (y^{(i)}-
 para 
 $j=0,1,\ldots, p$, donde fijamos $x_0^{(i)}=1$.
 ```
+<!-- - Aquí observamos que según los resultados de la evaluación de nuestra variable, veremos para donde moveremos el parámetro. -->
 
 
 Podríamos usar las siguientes implementaciones, que representan cambios
@@ -812,6 +821,8 @@ graf_3
 
 
 #### Máxima verosimilitud {-}
+<!-- - Esto de minimizar la devianza es lo mismo que maximizar la máxima verosimilitud.  -->
+<!-- - Regresión logística es una buena aproximación. Su rigidez puede ser una ventaja. -->
 
 Es fácil ver que este método de estimación de los coeficientes (minimizando la
 devianza de entrenamiento) es el método de máxima verosimilitud.  La verosimilitud
@@ -941,6 +952,8 @@ matplot(iteraciones, type = "l")
 diabetes_coef <- tibble(variable = c('Intercept',colnames(x_ent)), coef = iteraciones[1000,])
 diabetes_coef
 ```
+<!-- - Aquí podríamos hacer cálculos afectando un solo parámetro y comparando sin afectar los parámetros. Esto nos daría como resultado un indicador de qué tanto afectaría de más como se afecto el parámetro mencionado. -->
+
 
 Ahora calculamos devianza de prueba y error de clasificación:
 
@@ -1115,6 +1128,7 @@ ggplot(calibracion_gpos,
 
 
 Y con esto verificamos que calibración del modelo es razonable.
+<!-- - Si verificamos que el modelo está calibrado, podemos ya justificar las probabilidades. -->
 
 **Observación**: 
 

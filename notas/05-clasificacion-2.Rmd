@@ -149,6 +149,8 @@ ggplot(perdidas_sim, aes(x = factor(corte), y = - perdida / 1e6)) +
   geom_boxplot() + ylab("Ganancia vs Ninguna acción (millones)") +
   xlab("Corte inferior de tratamiento (prob)")
 ```
+<!-- - Este es un ejemplo de como debríamos presentar nuestro análisis. No solo se reduce a "lo que dice el modelo". -->
+
 
 ¿Dónde habría que hacer el punto de corte para tratar a los clientes?  
 
