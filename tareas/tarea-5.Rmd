@@ -118,6 +118,12 @@ una solución cercana al mínimo.
 <!-- - La idea general es hacer estimación con una muestra de datos para ahorrarte muchos recursos. -->
 <!-- - Tal vez el paso va a ser más chico pero eso es menos costoso. -->
 
+<!-- # COMENTARIOS ADICIONALES -->
+<!-- - El problema al que te puedes encotrar con regresiones logísticas es que las clases sean separables completamente. -->
+<!-- - El problema ahí es que no converga porque la devianza se va a cero. -->
+<!-- - Esto correspondería a una degeneración de la regresión logística. -->
+<!-- - Cuando te pasa esto no necesariamente se trata de algo triste. -->
+
 
 
 
