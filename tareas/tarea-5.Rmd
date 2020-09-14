@@ -55,6 +55,7 @@ solamente este punto de entrenamiento**,
 ¿hacia donde se mueve $\beta_1$? ¿Que pasa entonces $p_\beta$ cuando hacemos un paso
 de gradiente, crece o decrece? ¿Tiene sentido esto para hacer más chica la devianza de este
 caso de entrenamiento?
+<<<<<<< HEAD
 
 **Pregunta 6**: Escribe las parciales de la pregunta anterior para los parámetros $\beta_0$
 y $\beta_1$.
@@ -62,6 +63,19 @@ y $\beta_1$.
 **Pregunta 7**: Si tienes varios datos de entrenamiento, ¿cómo se ven las parciales
 de la devianza?  Explica por qué este 
 algoritmo es correcto:
+=======
+<!-- - Tenemos que hacer la probabilidad más cerca de 1, por lo que tenemos que hacer el coeficiente "beta" más grande. -->
+
+
+**Pregunta 6**: Escribe las parciales de la pregunta anterior para los parámetros $\beta_0$
+y $\beta_1$.
+<!-- - Con respecto a "Beta 2" va a ser igual a "Beta 1". -->
+<!-- - Con respecto a "Beta 0" no hay una constante multiplicando. -->
+
+
+**Pregunta 7**: Si tienes varios datos de entrenamiento, ¿cómo se ven las parciales
+de la devianza?  Explica por qué este algoritmo es correcto:
+>>>>>>> bRob_Homework
 
 Para calcular la dirección de descenso en descenso en gradiente,
 supongamos que los parámetros actuales de descenso en gradiente son $\beta_0, \beta_1, \beta_2$:
@@ -86,14 +100,48 @@ la dirección de descenso.
 Finalmente, hacemos un paso de descenso: para un tamaño de paso $\eta>0$, actualizamos
 el vector de parámetros con:
 $$\beta_{nuevo} = \beta + \eta\Delta$$
+<<<<<<< HEAD
 **Pregunta 8**: Si el conjunto de datos de entrenamiento es muy grande, ¿cómo se podría
 paralelizar el cálculo de la dirección de descenso en el algoritmo anterior?
+=======
+<!-- - Delta es el acumulado de la devianza.  -->
+<!-- - Paso 4: calculamos eso porque es el factor común -->
+<!-- - Paso 5: ahí vamos actualizando y acumulando los resultados de la devianza. -->
+<!--   - La delta corresponde al gradiente de "D" -->
+<!-- - Final: ya que tenemos la dirección del aprendizaje, nos movemos en esa dirección según el valor de "eta" -->
+
+
+**Pregunta 8**: Si el conjunto de datos de entrenamiento es muy grande, ¿cómo se podría
+paralelizar el cálculo de la dirección de descenso en el algoritmo anterior?
+<!-- - Si tienes un conjunto grande, ese conjunto está distribuido sobre varias computadoras. -->
+<!-- - Lo más caro es mover datos de compu a compu -->
+<!-- - Debes de llevar el cálculo a los datos -->
+<!-- - Cada computadora tiene una parte de los datos y sobre esta se hacen los cálculos y se obtiene el resultado. -->
+<!-- - Acumulas los resultados en un vector, juntas todos los resultados que obtienes (sumando vector) y de ahí ya obtienes tu resultado. -->
+<!-- - Es muy fácil paralelizar este procedimiento. -->
+
+>>>>>>> bRob_Homework
 
 **Pregunta 9**: ¿Qué crees que pasaría en el algoritmo anterior si en lugar de acumular
 sobre todo el conjunto de entrenamiento solo acumuláramos sobre una muestra aleatoria? Explica
 por qué crees que esta idea podría o no funcionar para ahorrar cálculo y encontrar 
 una solución cercana al mínimo.
+<<<<<<< HEAD
 
+=======
+<!-- - Se le llama a esto decenso en gradiente estocástico/ -->
+<!-- - Como es un algoritmo estocásitico puede nunca converger, ya que estará saltando por varios lados. -->
+<!-- - No necesitar procesar todos los datos para estimar gradiente. -->
+<!-- - Podemos tener una buena aproximación con una muestra aleatoria de datos. -->
+<!-- - La idea general es hacer estimación con una muestra de datos para ahorrarte muchos recursos. -->
+<!-- - Tal vez el paso va a ser más chico pero eso es menos costoso. -->
+
+<!-- # COMENTARIOS ADICIONALES -->
+<!-- - El problema al que te puedes encotrar con regresiones logísticas es que las clases sean separables completamente. -->
+<!-- - El problema ahí es que no converga porque la devianza se va a cero. -->
+<!-- - Esto correspondería a una degeneración de la regresión logística. -->
+<!-- - Cuando te pasa esto no necesariamente se trata de algo triste. -->
+>>>>>>> bRob_Homework
 
 
 
