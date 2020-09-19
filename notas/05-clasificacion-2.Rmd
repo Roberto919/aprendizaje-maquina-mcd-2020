@@ -97,6 +97,9 @@ cercana a 0).
 
 ## Ejemplo: decisiones basadas en probabilidades
 
+<!-- - La regresión logística nos da como resultado probabilidades. -->
+<!-- - Podemos hacer estas para hacer cálculos costo beneficio. -->
+
 Supongamos que tenemos un plan para retener a clientes. Construimos un modelo
 que nos da la probabilidad de abandono para cada cliente. Una primera reacción
 es poner un punto de corte para etiquetar a los clientes como "abandonadores" o
@@ -150,11 +153,16 @@ ggplot(perdidas_sim, aes(x = factor(corte), y = - perdida / 1e6)) +
   xlab("Corte inferior de tratamiento (prob)")
 ```
 <!-- - Este es un ejemplo de como debríamos presentar nuestro análisis. No solo se reduce a "lo que dice el modelo". -->
+<!-- - Hay que pegar el costo con la probabilidad para análisis costo beneficio. -->
 
 
 ¿Dónde habría que hacer el punto de corte para tratar a los clientes?  
 
+
 ## Análisis de error para clasificadores binarios
+
+<!-- - En análisis costo beneficio de arriba puede ser difícil de hacer en la vida real. -->
+<!-- - Lo que podemos hacer es intentar evaluar las probabilidades más que las decisiones. -->
 
 En muchas ocasiones, los costos y las decisiones todavía no están bien definidas,
 y requierimos una manera de evaluar los modelos que sea útil para considerar si 
@@ -197,7 +205,11 @@ tabla <- tibble(' ' = c('positivo.pred','negativo.pred','total'),
                     'total' = c('pred.pos','pred.neg',''))
 knitr::kable(tabla)
 ```
-
+<!-- - Si sumas la columna "positivo" tienes todos los enfermos -->
+<!-- - Si sumas el rengón tienes todo lo que dijo tu predicción -->
+<!-- - Queremos una matriz con la mayoría de los casos en la diagonal -->
+<!-- - Esta matriz de confusión puede ser un juego mental infernal. Hay varios puntos donde es muy confuso -->
+<!--   - Puede ser que no tengas falsos positivos y tienes que confundirte pensando en que no es un falso negativo -->
 
 
 Nótese que un clasificador bueno, en general, es uno
@@ -217,11 +229,18 @@ $$\frac{fn}{pv+fn}=\frac{fn}{pos}$$
 
 - Especificidad: tasa de correctos entre negativos, es el complemento de
 la tasa de falsos positivos.
+<!-- - Qué tan especificamente reacciona la prueba -->
+<!-- - Es como "descartar" -->
+<!-- - En el caso de un buscador, puede no ser muy relevante porque tienes una infinidad de documentos no importantes, lo cual derivará en que te salga muy alto este valor. -->
+<!-- - La especifidad puede ser muy importante en temas médicos. Puedes someter a las personas incorrectas a un tratamiento. -->
 $$\frac{vn}{fp+vn}=\frac{vn}{neg}$$
 
 - Sensibilidad o Recall o Exhaustividad: 
 tasa de correctos entre positivos, es el complemento
 de la tasa de falsos negativos.
+<!-- - Qué tan sensible es la prueba? -->
+<!-- - Sería como hacer una búsqueda y ver qué tantas cosas buenas te regreso en comparación con todos los resultados -->
+<!--   - No sirve de mucho que te de todos los docs buenos en medio de mucha basura (buena sensibilidad pero mala precisión) -->
 $$\frac{vp}{vp+fn}=\frac{vp}{pos}$$ 
 
 
@@ -235,6 +254,7 @@ $$\frac{vp}{vp+fp}=\frac{vp}{pred.pos}$$
 - Valor predictivo negativo: tasa de correctos entre todos los que
 *clasificamos* como negativos
 $$\frac{vn}{fn+vn}=\frac{vn}{pred.neg}$$
+<!-- - Este caso puede ser relevante para casos de campañas de marketing. -->
 
 
 Dependiendo de el tema y el objetivo hay medidas más naturales que otras:
@@ -281,6 +301,8 @@ como
 
 - **Medida F** (media armónica de precisión y recall)
 $$2\frac{precision \cdot recall}{precision +  recall}$$
+<!-- - Esta media armónica puede ayudar a evitar los vicios del promedio tradicional. -->
+
 Se usa la la media armónica que penaliza más fuertemente desempeño malo en
 alguna de nuestras dos medidas (precisión y recall) que el promedio armónico.
 
@@ -617,6 +639,8 @@ positivos)
 - Una alternativa es usar curvas ROC
 
 ## Curvas acumuladas de ganancia y lift
+
+<!-- - Lo bueno de esta curva es que nos puede dar un indicador del costo de dar tratamiento a un tipo de personas en particular. -->
 
 Otro enfoque común y útil es graficar en el eje horizontal el porcentaje
 de casos que cada clasificador clasifica como positivos para cada punto
