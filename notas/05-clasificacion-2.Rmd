@@ -683,6 +683,9 @@ para puntos de corte altos.
 
 
 ### Regresión logística para más de 2 clases {-}
+<!-- - La manera más fácil de hacero es entrenar un modelo de regresión logística para cada clase. -->
+  <!-- - El chiste es sacar una probabilidad para cada modelo y comparar. -->
+
 
 Consideramos ahora un problema con más de dos clases, de manera que $G ∈ {1,2,...,K}$
 ($K$ clases), y tenemos $X = (X1 ...,Xp)$ entradas.
@@ -731,6 +734,7 @@ y calcular
 $$p_j(x) = \frac{Z_j}{Z} = \frac{\exp(\beta_0^j + \beta_1^jx_1 + \ldots + \beta_p^j x_p)}{Z}$$
 A estas probabilidades (que suman 1 sobre todas las clases) se les llama el **softmax** de las cantidades $L_j$, es decir,
 el softmax de $L_1, \ldots, L_K$ es 
+<!-- - La transformación softmax es ir de las "L's" a las probabilidades -->
 
 $$\frac{\exp(L_j)}{\sum_{j=1}^K \exp(L_j)}$$
 Esta es la idea básica de regresión logística multinomial. 
@@ -740,6 +744,7 @@ que estos coeficientes *sobreparametrizan* las probabilidades, pues como estas
 probabilidades suman 1, una vez que conocemos las primeras $K-1$, la otra debería
 estar determinada. Esto implica, entre otras cosas, que hay múltiples formas
 de expresar con el mismo modelo con distintos parámetros (¿ejemplo?). 
+- El que un modelo esté sobre parametrizado quiere decir 
 
 
 - Este es un problema que vamos a resolver más adelante 
