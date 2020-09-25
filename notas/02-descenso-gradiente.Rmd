@@ -199,9 +199,10 @@ limpiar_casas <- function(datos){
            precio_miles = SalePrice / 1000,
            habitable_m2 = (GrLivArea * 0.092903),
            precio_m2_miles = precio_miles / habitable_m2,
-           calidad = OverallQual - 6) %>%
+           calidad = OverallQual - 6,
+           habitaciones = BedroomAbvGr) %>%
     filter(SaleCondition %in% c("Normal", "AdjLand")) %>%
-    select(Id, tiene_piso_2:calidad)
+    select(Id, tiene_piso_2:habitaciones)
   datos_limpios
 }
 datos_exp <- limpiar_casas(train)
@@ -231,7 +232,7 @@ train_tbl <- limpiar_casas(train)
 test_tbl <- limpiar_casas(test)
 # usamos recipes para este ejemplo, no necesitas usarlo
 casas_receta <- recipe(precio_m2_miles ~ ., train_tbl) %>%
-  update_role(Id, precio_miles, habitable_m2, new_role = "none")
+  update_role(Id, precio_miles, habitable_m2, habitaciones, new_role = "none")
 casas_receta %>% summary()
 ```
 
@@ -446,8 +447,9 @@ h <- function(z) {
   z[1]^2 + z[2]^2 - z[1] * z[2]
 }
 h_gr <- function(z_1,z_2) apply(cbind(z_1, z_2), 1, h)
+
 grid_graf <- expand.grid(z_1 = seq(-3, 3, 0.1), z_2 = seq(-3, 3, 0.1))
-grid_graf <- grid_graf %>%  mutate( val = apply(cbind(z_1,z_2), 1, h))
+grid_graf <- grid_graf %>%  mutate( val = h_gr(z_1, z_2) )
 gr_contour <- ggplot(grid_graf, aes(x = z_1, y = z_2, z = val)) +
   geom_contour(binwidth = 1.5, aes(colour = ..level..))
 gr_contour
@@ -660,6 +662,10 @@ lm(precio_m2_miles ~ calidad + tiene_piso_2, data = train_tbl) %>% coef
 
 ## Normalización de entradas
 
+<!-- - El punto de normalizar es hacer que las curvas de nivel sean parecidas, para que no tengamos saltos muy fuertes en una dirección y otros muy débiles. -->
+<!-- - Estandarizar no cambia el modelo, solo cambia los escalares. -->
+<!-- - La convergencia puede llegar a ser mucho más rápida estandarizando. -->
+
 La convergencia de descenso en gradiente (y también el desempeño numérico
 para otros algoritmos) puede dificultarse cuando las variables tienen escalas
 muy diferentes. Esto produce curvaturas altas en la función que queremos
@@ -788,11 +794,11 @@ $${g}_{\beta^s} (X) = \beta_0^s + \beta_1^s Z_1 + \beta_2^s Z_2 + \cdots + \beta
 
 Sustituyendo $Z_j = (X_j - \mu_j)/s_j,$
 
-$${g}_{\beta^s} (X) = (\beta_0^s - \sum_{j=1}^p \mu_j/s_j) + \frac{\beta_1^s}{s_j} X_1 + \frac{\beta_2^s}{s_2} X_2 + \cdots + \frac{\beta_p^s}{s_p} X_p,$$
+$${g}_{\beta^s} (X) = (\beta_0^s - \sum_{j=1}^p \beta_j^s \mu_j/s_j) + \frac{\beta_1^s}{s_j} X_1 + \frac{\beta_2^s}{s_2} X_2 + \cdots + \frac{\beta_p^s}{s_p} X_p,$$
 Y vemos que tiene la misma forma funcional de $f_\beta(X)$. Si la solución de mínimos cuadrados es única,
 entonces una vez que ajustemos tenemos que tener $\hat{f}_\beta(X) = \hat{g}_{\beta^s} (X)$,
 lo que implica que
-$$\hat{\beta}_0 = \hat{\beta}_0^s -  \sum_{j=1}^p \hat{\beta}_0^s\mu_j/s_j$$ y
+$$\hat{\beta}_0 = \hat{\beta}_0^s -  \sum_{j=1}^p \hat{\beta}_j^s\mu_j/s_j$$ y
 $$\hat{\beta}_j = \hat{\beta}_j^s/s_j.$$
 
 Nótese que para pasar del problema estandarizado al no estandarizado simplemente
@@ -841,6 +847,7 @@ coef(lm.fit(cbind(1, x_ent), y_ent))
 
 
 ## Interpretación de modelos lineales
+<!-- - En cierto sentido los modelos lineales también son cajas negras. -->
 
 Muchas veces se considera que la facilidad de interpretación es una fortaleza
 del modelo lineal. Esto es en parte cierto, pero hay algunas consideraciones
@@ -849,8 +856,13 @@ importantes que debemos tomar en cuenta.
 En primer lugar, podemos separar la interpretación en dos modalidades:
 
 1. Entender cómo calcula nuestro modelo las predicciones.
-2. Entender aspectos del fenóomeno de interés a través de nuestro modelo. Por ejemplo,
-interpretar un coeficiente positivo como
+2. Entender aspectos del fenómeno de interés a través de nuestro modelo. Por ejemplo,
+interpretar un coeficiente positivo como el efecto en nuevos datos de cambiar
+una variable que podemos manipular.
+
+<!-- - Hay patrones en los datos que son complicados y, por ende, hacen complicado de interpretar el modelo. -->
+<!-- - Generalmente ajustamos datos con muestras observaciones. Hay relaciones complejas entre las variables. -->
+<!-- - Los modelos de predicción son para predecir, no para explicar el fenómeno. -->
 
 Las interpretaciones del tipo 1 son en general simples para modelos lineales,
 y sirven para explicar la estructura del modelo. Para modelos más complicados es
@@ -870,15 +882,15 @@ los coeficientes.
 
 
 
-
 #### Ejemplo {-}
 
 Consideramos otro modelo para estudiar su estructura:
 
-```{r}
+```{r, collapse = TRUE}
 train_tbl <- train_tbl %>% mutate(habitable_100_m2_c = (habitable_m2 - mean(habitable_m2))/100)
 modelo_casas <- lm( precio_m2_miles ~ 1 + calidad + tiene_piso_2 + habitable_100_m2_c, data = train_tbl)
 # interpretar en miles de dólares
+cat("Coeficientes para precio por metro cuadrado \n")
 1000*(coef(modelo_casas) %>% round(2))
 ```
 
@@ -947,12 +959,38 @@ no consideramos que hay otra variable importante, que es el interés de la
 persona en compra de TVs Samsung. Sin embargo, ningún diagnóstico del
 modelo nos puede decir de esta especificación incorrecta.
 
-En general, la recomendación es que las interpretaciones causales deben considerarse
+Notamos otro ejemplo en nuestro análisis anterior. Si consideramos
+el modelo simple para precio en miles de dólares:
+
+```{r}
+modelo_casas_1 <- lm( precio_miles ~ 1 + habitaciones, data = train_tbl)
+(coef(modelo_casas_1) %>% round(2))
+```
+
+¿Esto implica entonces que mejorar el valor de una casa conviene dividir habitaciones?
+Probablemente no. Por ejemplo, para un tamaño de casa fijo, el coeficiente de
+número de habitaciones es negativo.
+
+```{r}
+modelo_casas_2 <- lm( precio_miles ~ 1 + calidad + habitaciones + habitable_100_m2_c , data = train_tbl)
+(coef(modelo_casas_2) %>% round(2))
+```
+
+---
+
+Para construir modelos apropiados e interpretaciones adecuadas se requiere tener
+las variables y datos importantes, los modelos correctos tanto en términos estadísticos como
+en términos de conocimiento de dominio, y entender cómo es el proceso generador de
+los datos que estamos utilizando. En general, la recomendación es que las
+interpretaciones causales deben considerarse
 como preliminares bajo ciertos supuestos, y se requiere más análisis y consideraciones
 antes de poder tener interpretaciones causales sólidas (ver @KingCausal y @GelmanHill,
 por ejemplo).
 
 ## Predicción e incertidumbre
+
+<!-- - Tener intervalos de predicción mejora mucho el proceso de toma de decisiones. -->
+<!-- - Tenemos que hacer más trabajo para construir los intervalos predictivos. -->
 
 En todos los casos de arriba, vimos cómo hacer predicciones puntuales para minimizar
 el error de predicción. Como función de pérdida utilizamos el error cuadrático. Esto
@@ -970,9 +1008,9 @@ predecimos que van a hacer compras grandes futuras) pues queremos diseñar una i
 para mejorar su satisfacción, mejorar su retención, o aumentar su valor de algún modo. Ahora
 imaginemos que tenemos dos clientes, cuya predicción es
 igual a 10,000. Sin embargo, tenemos incertidumbre alta acerca del cliente A (podría ir de
-10 a 20 mil), mientras que para cliente B tenemos incertidumbre relativamente baja
-(por ejemplo, de 7 mil a 15 mil pesos). Si el tratamiento es costoso, puedes ser que
-preferamos tratar a B (si somos aversos al riesgo) en lugar de A.
+2 a 20 mil), mientras que para cliente B tenemos incertidumbre relativamente baja
+(por ejemplo, de 8 mil a 12 mil pesos). Si el tratamiento es costoso, puedes ser que
+preferamos tratar a B en lugar de A.
 
 Otro ejemplo es si queremos hacer pronósticos de ventas
 o inventarios para tiendas individuales de una cadena
@@ -1039,5 +1077,5 @@ casas_int %>%
     mutate(cubre = precio_miles > .pred_lower & precio_miles < .pred_upper) %>%
     summarise(cobertura = mean(cubre),
               ee = sqrt(mean(cubre) * mean(1 - cubre) / n())) %>%
-    mutate(across(where(is_numeric), round, 3))
+    mutate(across(where(is.numeric), ~ round(.x, 3)))
 ```
