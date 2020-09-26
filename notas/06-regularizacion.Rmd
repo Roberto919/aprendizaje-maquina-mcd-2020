@@ -71,10 +71,7 @@ set.seed(2805)
 beta_vec <- rnorm(100,0,0.1)
 beta <- tibble(term = paste0('V', 1:length(beta_vec)), valor = beta_vec)
 head(beta)
-<<<<<<< HEAD
 tail(beta)
-=======
->>>>>>> master
 ```
 
 Con esta función simulamos datos de entrenamiento (400) y datos
@@ -124,11 +121,7 @@ ggplot(coefs_1 %>% filter(term != "(Intercept)"),
   xlab('Coeficientes') + 
   ylab('Coeficientes estimados') +
   geom_abline() +
-<<<<<<< HEAD
   xlim(c(-1.5,1.5)) + ylim(c(-1.5,1.5))
-=======
-  xlim(c(-1.5,1.5))+ ylim(c(-1.5,1.5))
->>>>>>> master
 ```
 
 Y notamos que las estimaciones no son buenas.
@@ -345,7 +338,6 @@ ggplot(roc_curvas_reg,
   geom_path() +
   geom_abline()
 ```
-
 
 
 ## Regularización ridge
