@@ -363,6 +363,7 @@ la desviación estándar).
 coeficientes, especialmente en casos donde tenemos muchas variables en relación
 a los casos de entrenamiento. La penalización no permite que varíen tan fuertemente
 los coeficientes.
+  <!-- - En general no deberías correr modelos que se hicieron con menos datos que variables. En caso de que sí, tienes que aplicar la regularización. -->
 - Cuando $\lambda$ es mas grande, los coeficientes se encogen más fuertemente
 hacia cero con respecto al problema no regularizado. En este caso, estamos
 **reduciendo la varianza** pero potencialmente **incrementando el sesgo**.
@@ -376,6 +377,7 @@ la predicción $\hat{y}$, cuando todas las variables $x_j$ toman su valor
 en la media, es el promedio de las $y_i$'s de entrenamiento. Igualmente en 
 regresión logística, la probabilidad ajustada cuando las entradas toman su
 valor en la media es igual a $h(\beta_0)$.
+  <!-- - Normalmente lo pensarías cuando tienes muy pocos datos o cuando hay mucho ruido involucrado. -->
 - Que las variables estén estandarizadas es importante para que tenga
 sentido la penalización. Si las variables $x_j$ están en distintas escalas (por ejemplo
 pesos y dólares), entonces también los coeficientes $\beta_j$ están en distintas escalas,
@@ -389,6 +391,8 @@ $$\frac{\partial D_{\lambda}^{ridge} (\beta)}{\partial\beta_j} = \frac{\partial 
 para $j=1,\ldots, p$, y 
 $$\frac{\partial D_{\lambda}^{ridge} (\beta)}{\partial\beta_0} = \frac{\partial D(\beta)}{\beta_0}.$$
 ```
+<!-- - La ventaja de esta penalización es que es muy barata. -->
+
 
 De forma que sólo hay que hacer una modificación  mínima al algoritmo de descenso en gradiente
 para el caso no regularizado.
@@ -396,6 +400,8 @@ para el caso no regularizado.
 
 
 ## Variables correlacionadas {-}
+<!-- - En realidad este es el caso para el cual se inventó la penalización Ridge. -->
+<!-- - El problema con las variables correlacionadas es que no sabes a quien echarle la culpa. Puedes tener muchos modelos que den el mismo resultado. -->
 
 
 Ridge es efectivo para reducir varianza inducida por variables correlacionadas.
@@ -442,9 +448,15 @@ al problema con regularización. Regularización, en este tipo de problemas, es 
 de las componentes necesarias (pero no suficiente) para ir hacia interpretación
 del fenómeno que nos interesa.
 
+<!-- - Las componentes principales son idea clave de este problema. -->
+<!-- - Un ejercicio que se puede hacer es hacer una regresión en términos de x1 y x2. Después hacer una regresión Ridge. -->
+<!--   - Notaremos que Ridge se encargará de repartir más parejo. -->
+<!-- - Cuando hablamos de correlación siempre hablamos en términos lineales. Es qué tan fácil puedes establecer una relación lineal entre una variable y la otra. -->
+
 
 
 ### Selección de coeficiente de regularización
+<!-- - Para seleccionar lambra no puedes usar el conjunto de entrenamiento, este ya te lo "gastaste" -->
 
 Seleccionamos $\lambda$ para minimizar el error de predicción,
 es decir, para mejorar nuestro modelo ajustado en cuanto a sus 
@@ -479,6 +491,7 @@ flujo_reg <- workflow() %>%
   add_model(modelo_regularizado) %>% 
   add_recipe(receta)
 ```
+<!-- - Por default te da una rejilla en escala logarítmica (log10_trans()) -->
 
 
 ```{r}
@@ -494,6 +507,9 @@ desempeño <- glmnet_tune %>% unnest(cols = c(.metrics)) %>%
   select(id, penalty, .metric, .estimate)
 desempeño
 ```
+<!-- - Vamos a usar un nuevo conjunto de datos (validación). Los tres conjuntos que tendremos son: -->
+<!--   - Entrenamiento, validación y prueba. -->
+
 
 ```{r}
 ggplot(desempeño %>% filter(.metric == "mn_log_loss"), 
@@ -501,9 +517,9 @@ ggplot(desempeño %>% filter(.metric == "mn_log_loss"),
   geom_line() + geom_point() +
   scale_x_log10() + ylab("Pérdida logarítmica") + xlab("Penalización (lambda)")
 ```
-
-
-
+<!-- - En general es buena idea penalizar para tener un modelo más robusto, con coeficientes más controlados. -->
+<!--   - Podrías tener dos modelos muy parecidos pero nos interesa más el modelo que es más sencillo. El más "parsimonioso"/sencillo. -->
+<!--   - Nos ayuda a que el modelo sea menos volatil. -->
 
 
 **Discusión**: ¿por qué la devianza de prueba tiene esta forma, que es
@@ -550,6 +566,18 @@ con varios parámetros afinados (como la $\lambda$ de regresión ridge).
 ```{r, out.width=450}
 knitr::include_graphics("./figuras/div_muestra.png")
 ```
+<!-- - En validación es donde se ajustan los hiperparámetros. -->
+<!-- - El conjunto de prueba se guarda en una caja fuerte. -->
+<!-- - No debes hacer mucho ir y venir entre validación y entrenamiento. -->
+<!-- - En entrenamiento ves muchas lambdas y en validación eliges el bueno. -->
+<!-- - Debemos tener una forma de validar lo mejor posible nuestro modelo. -->
+  <!-- - En entrenamiento es muy fácil obtener cosas buenas. En validación es lo importante. -->
+  <!-- - Seleccionar la estructura correcta de los modelos. -->
+    <!-- - Conocimiento del problema -->
+    <!-- - Ajuste de los datos -->
+  <!-- - Como afino los algoritmos para que funcionen al máximo. -->
+    <!-- - Afianr el algoritmo es más algo computacional. -->
+
 
 Cuando tenemos datos abundantes, este enfoque es el usual. Por ejemplo,
 podemos dividir la muestra en 50-25-25 por ciento. Ajustamos modelos
@@ -567,8 +595,10 @@ Pudes ver el ejemplo anterior donde usamos esta estrategia para evaluar
 distintos valores de $\lambda$.
 
 
-
 ### Validación cruzada
+<!-- - Requiere más cómputo pero nos puede ayudar a desgastar menos nuestro conjunto de validación. -->
+<!-- - La idea es hacer conjuntos más pequeños derivados de los datos de entrenamiento. Haces como pequeños conjuntos de prueba y validación. -->
+
 
 En muchos casos, no queremos apartar una muestra de validación para seleccionar modelos,
 pues no tenemos muchos datos (al dividir la muestra obtendríamos
@@ -593,6 +623,14 @@ $$ {\mathcal L}={\mathcal L}_1\cup {\mathcal L}_2\cup\cdots\cup {\mathcal L}_k.$
 ```{r, out.width=320}
 knitr::include_graphics("./figuras/div_muestra_cv.png")
 ```
+<!-- - Estas son divisiones del conjunto de entrenamiento. -->
+<!--   - La parte azul son los datos de entrenamiento y la amarilla los de validación. -->
+<!--   - El problema es que el error de cada "renglón" es que te dará un error con alta varianza. -->
+<!--   - Lo que hacemos es sacar el promedio de los errores. -->
+<!--     - El promedio nos dará un quinto de la varianza de todos los ejercicios. -->
+<!-- - Ya que hicimos el ejercicio elegimos un modelo e hiper parámetros que mejor nos funcionaron. -->
+<!-- - La de 5 y 10 particiones son las más pupulares -->
+<!--   - El problema es que nuestro modelo con pocos datos de entrenamiento va a dar muy malas predicciones. -->
 
 Construimos $k$ modelos distintos, digamos $\hat{f}_j$, usando solamente
 la muestra ${\mathcal L}-{\mathcal L}_j$, para $j=1,2,\ldots, k$. Cada uno de estos modelos lo evaluamos
@@ -699,6 +737,7 @@ da dos opciones para escoger la lambda final:
 - Escoger la que de el mínimo valor de error por validación cruzada
 - Escoger la lambda más grande *que no esté a más de 1 error estándar
 del mínimo.*
+  <!-- - Te posicionas en el rango superior de punto con el menor error que esté regularizado y ahí te vas horizontalmente hasta el punto rojo. -->
 
 Podemos obtener estos resultados de esta forma:
 
@@ -721,6 +760,8 @@ g_1 +
 
 
 ### ¿Cómo se desempeña validación cruzada como estimación del error?
+<!-- - El error de validación cruzada no es el error de prueba. -->
+
 
 Podemos comparar el desempeño estimado con validación cruzada con el de
 muestra de prueba: Consideremos nuestro ejemplo simulado de regresión logística. Repetiremos
@@ -770,6 +811,10 @@ ggplot(evals_tbl %>%
   geom_point() + facet_wrap(~ .metric) +
   geom_abline(colour = "red")
 ```
+<!-- - Aquí vemos que los errores no están correlacionados. -->
+<!-- - Esto es en el caso de que la validación cruzada lo usemos para estimar el error de prueba. -->
+<!-- - La validación cruzada no sustituye a una muestra de datos grandes. -->
+
 
 Observa los rangos de los ejes. Vemos que aunque los dos tipos de estimaciones
 están centradas 
@@ -946,10 +991,14 @@ La salida de glmnet,
 sin embargo, tiene coeficientes para todas las clases ($K(p+1)$ parámetros). 
 ¿Por qué en regresión ridge no es tan importante que 
 el modelo esté sobreparametrizado? 
+<!-- - Aquí vemos que la regularización nos da casi un brinco gratuito en el desempeño. -->
 
 
 
 ## Regularización lasso
+<!-- - No es muy diferente a Ridge -->
+<!--   - Penaliza por el valor absoluto en lugar de por el cuadrado. -->
+<!-- - La labmda la puedes pensar como un multiplicador de Lagrange. -->
 
 
 Otra forma de regularización es el **lasso**, que en lugar de penalizar

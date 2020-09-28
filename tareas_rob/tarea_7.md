@@ -17,6 +17,7 @@ Leer la sección 6.1 (Regularización ridge) de las notas y sus dos ejemplos(el 
 2. ¿Por qué es buena idea estandarizar los coeficientes antes de aplicar regularización? (Piensa en las escalas de los coeficientes)
 
    - *Por que, si los coeficientes están a distintas escalas, la penalización afectará de forma de forma distinta a cada coeficiente.*
+   - *Vas a acabar penalizando más a los coeficientes que estén en escala más grande.*
 
 3. En el siguiente ejemplo de simulación, 
 
@@ -25,6 +26,7 @@ Leer la sección 6.1 (Regularización ridge) de las notas y sus dos ejemplos(el 
 
    - ¿Por qué la devianza de prueba tiene una forma de U?
      - *Porque existe un punto medio entre tener un valor bajo del parámetro $\lambda$ (baja penalización, varianza alta y potencialmente sesgo bajo) y un valor alto del parámetro $\lambda$ (alta penalización, varianza baja y potencialmente sesgo alto) que nos dará el menor error posible en las predicciones de nuestro modelo en el set de prueba.*
+     - *Del lado izquierdo de la "U" tienes sobreajuste; mucha varianza. Del lado derecho tienes muy poca varianza pero mucho más sesgo.*
 
 4. En este mismo ejemplo 
 
