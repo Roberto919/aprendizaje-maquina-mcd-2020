@@ -33,6 +33,10 @@ mejores predicciones con modelos más realistas.
 El proceso de [feature engineering](http://www.feat.engineering/index.html) es un proceso de creación, refinación y selección
 de entradas de los modelos. Este proceso es importante para obtener buenos resultados
 desde el punto de vista de desempeño predictivo. 
+<!-- - Generar variables derivadas -->
+<!-- - La varianza se puede volver un problema grave. -->
+<!-- - Esta técnica se usa para varios tipos de modelos. -->
+<!-- - Es un paso que típicamente se hace (el proceso en la tarea de textos es un caso de feature engineering) -->
 
 
 Por ejemplo:
@@ -176,6 +180,7 @@ g_1 / g_2
 }
 graficar_evaluar(flow_1, casas_e)
 ```
+<!-- - Aquí estaríamos esperando ver una relación lineal entre la predicción y el valor real. -->
 
 
 Y notamos que nuestras predicciones parecen estar sesgadas: tienden a ser  bajas
@@ -194,6 +199,8 @@ flow_2 <- workflow() %>% add_recipe(receta_casas) %>% add_model(mod_lineal)
 ajuste_2 <- fit(flow_2, casas_e)
 graficar_evaluar(flow_2, casas_e)
 ```
+<!-- - Con estas modificaciones obtenemos un mejor desempeño del modelo. -->
+
 
 Y redujimos el error de validación. Esta reducción claramente proviene de una reducción
 de sesgo, pues usamos un modelo más complejo (una variable adicional).
@@ -336,6 +343,9 @@ ajuste_2 %>% pull_workflow_fit() %>% tidy %>%
   mutate(across(!starts_with("term"), round, 2)) %>% 
   DT::datatable()
 ```
+<!-- - En esta tabla estamos viendo que faltan los casos en los que no hay sótano. -->
+<!-- - Estamos viendo que los que no son excelentes salen negativos, esto es problemático y hay que revisarlo bien. -->
+
 
 Nótese que los coeficientes de esta variable no se pueden interpretar sin considerar 
 *TotalBsmntSF*, que vale cero cuando la casa no tienen sótano. Por ejemplo, observamos
