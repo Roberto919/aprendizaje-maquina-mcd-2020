@@ -56,6 +56,7 @@ condicional es el mismo que el de regresión logística (combinaciones lineales
 de combinaciones lineales son combinaciones lineales). Sin embargo, al 
 transformar con $h$, las $x_j$ contribuyen de manera no lineal a las
 entradas derivadas.
+<!-- -Si la "h" fuera lineal no estaríamos haciendo realmente nada. Lo crucial es que sea no lineal. Se les llama funciones de activación. -->
 - Las variables $a_k$ que se pueden obtener son similares (para una variable de entrada)
 a los I-splines que vimos en la parte anterior.
 - Es posible demostrar que si se crean suficientes entradas derivadas
@@ -67,6 +68,7 @@ arcotangente, o lineal rectificada). La idea es que cualquier función se puede 
 mediante superposición de funciones tipo sigmoide (ver por ejemplo 
 Cybenko 1989, Approximation by 
 Superpositions of a Sigmoidal Function).
+<!-- - Con suficientes datos puedes aproximar la "p" al nivel que tu quieras. -->
 
 
 
@@ -128,6 +130,7 @@ dat_a <- tibble(x = x, a_1 = a_1, a_2 = a_2)
 dat_a_2 <- dat_a %>% gather(variable, valor, a_1:a_2)
 ggplot(dat_a_2, aes(x=x, y=valor, colour=variable, group=variable)) + geom_line()
 ```
+<!-- Podemos ver que podemos simular el chipote tomando en cuenta la diferencia entre las dos curvas. La diferencia es grande en "x" cercanas a 0 y chica en los extremos. -->
 
 Si las escalamos y sumamos, obtenemos
 ```{r}
@@ -147,6 +150,8 @@ geom_line(data=dat_p, aes(x=x,y=p), col='red') +ylim(c(0,1))+
 que da un ajuste razonable. Este es un ejemplo de cómo
 la mezcla de dos funciones logísticas puede 
 replicar esta función con forma de chipote.
+
+<!-- Esto se hizo manualmente, pero el chiste es que se haga de forma automatizada. -->
 
 
 ### ¿Cómo ajustar los parámetros? {-}
@@ -174,6 +179,8 @@ feed_fow <- function(beta, x){
   p
 }
 ```
+
+<!-- Se le llama "feed_forward" porque meter betas y te da "p" -->
 
 Nótese que simplemente seguimos el diagrama mostrado arriba
 para hacer los cálculos, combinando linealmente las entradas en cada
@@ -228,6 +235,8 @@ Los coeficientes estimados, que en este caso muchas veces se llaman
 ```{r}
 beta %>% round(2)
 ```
+
+<!-- Los primeros dos coeficientes se ven grandes. -->
 
 que parecen ser muy grandes. Igualmente, de la figura
 vemos que el ajuste no parece ser muy estable (esto se puede
