@@ -2,17 +2,17 @@
 
 ## Introducción a redes neuronales
 
-En la parte anterior, vimos cómo hacer más flexibles los métodos de regresión: 
+En la parte anterior, vimos cómo hacer más flexibles los métodos de regresión:
 la idea es construir entradas derivadas a partir de las variables originales, e incluirlas en el modelo de regresión.
-Este enfoque es bueno cuando tenemos relativamente pocas variables originales de entrada, y tenemos una idea de qué variables derivadas es buena idea incluir (por ejemplo, splines para una variable como edad, interacciones para variables importantes, etc). Sin embargo, si hay una gran cantidad de entradas, esta técnica puede ser prohibitiva en términos de cálculo y 
+Este enfoque es bueno cuando tenemos relativamente pocas variables originales de entrada, y tenemos una idea de qué variables derivadas es buena idea incluir (por ejemplo, splines para una variable como edad, interacciones para variables importantes, etc). Sin embargo, si hay una gran cantidad de entradas, esta técnica puede ser prohibitiva en términos de cálculo y
 trabajo manual.
 
-Por ejemplo, si tenemos unas 100 entradas numéricas, al crear todas las interacciones 
+Por ejemplo, si tenemos unas 100 entradas numéricas, al crear todas las interacciones
 $x_i x_j$ y los cuadrados $x_i^2$ terminamos con unas 5150 variables. Para el problema de dígitos (256 entradas o pixeles) terminaríamos con unas 32 mil entradas adicionales. Aún cuando es posible regularizar, en estos casos suena más conveniente construir entradas derivadas a partir de los datos.
 
-Para hacer esto, consideramos entradas $X_1, . . . , X_p$, y 
-supongamos que tenemos un problema de clasificación binaria, 
-con $G = 1$ o $G = 0$. Aunque hay muchas 
+Para hacer esto, consideramos entradas $X_1, . . . , X_p$, y
+supongamos que tenemos un problema de clasificación binaria,
+con $G = 1$ o $G = 0$. Aunque hay muchas
 maneras de construir entradas derivadas, una
 manera simple sería construir $m$ nuevas entradas mediante:  
 
@@ -21,39 +21,39 @@ $$a_k = h \left ( \theta_{k,0} + \sum_{j=1}^p \theta_{k,j}x_j
 
 para $k=1,\ldots, m$, donde $h$ es la función logística, y las $\theta$ son parámetros
 que seleccionaremos más tarde. La idea es hacer **combinaciones lineales** de
-variables **transformadas**. 
+variables **transformadas**.
 
 
- Modelamos ahora la probabilidad de clase 1 con regresión logística, pero en lugar de usar las entradas originales X usamos las entradas derivadas 
+ Modelamos ahora la probabilidad de clase 1 con regresión logística, pero en lugar de usar las entradas originales X usamos las entradas derivadas
 $a_1, . . . , a_m$:
 $$p_1(x) = h \left ( \beta_0 + \sum_{j=1}^m \beta_ja_j
-\right)$$ 
- 
- 
+\right)$$
+
+
 Podemos representar este esquema con una red dirigida  ($m=3$ variables derivadas):
 ```{r, echo=FALSE, message=FALSE}
-knitr::opts_chunk$set(fig.width=5, fig.asp=0.7) 
+knitr::opts_chunk$set(fig.width=5, fig.asp=0.7)
 ```
 
-```{r, warning=FALSE, message=FALSE, out.width=600, echo=FALSE, fig.width=5, fig.asp=1}
+```{r, warning=FALSE, message=FALSE, out.width="400px", echo=FALSE, fig.width=8, fig.height=5}
 usar_cache = FALSE
 library(igraph)
 library(tidyverse)
  gr <- graph(
    c(c(1,4,1,5,1,6,2,4,2,5,2,6,3,4,3,5,3,6), c(4,7,5,7,6,7)))
  plot(gr, layout = matrix(c(-4,1,-4,0,-4,-1,0,1,0,-1,0,0,4,0), byrow=T, ncol=2),
-      vertex.label=c('X1','X2','X3','a1','a2','a3','p1'), 
-      vertex.size=50, vertex.color='salmon', vertex.label.cex=1,
-      vertex.label.color='white',vertex.frame.color=NA)
+      vertex.label=c('X1','X2','X3','a1','a2','a3','p1'),
+      vertex.size=30, vertex.color='salmon', vertex.label.cex=1.5, asp = 0.5,
+      vertex.frame.color=NA)
 ```
 
 **Observaciones:**
 
 - ¿Por qué usar $h$ para las entradas derivadas $a_k$? En primer lugar,
-nótese que si no transformamos con alguna función no lineal $h$, 
+nótese que si no transformamos con alguna función no lineal $h$,
 el modelo final $p_1$ para la probabilidad
 condicional es el mismo que el de regresión logística (combinaciones lineales
-de combinaciones lineales son combinaciones lineales). Sin embargo, al 
+de combinaciones lineales son combinaciones lineales). Sin embargo, al
 transformar con $h$, las $x_j$ contribuyen de manera no lineal a las
 entradas derivadas.
 <!-- -Si la "h" fuera lineal no estaríamos haciendo realmente nada. Lo crucial es que sea no lineal. Se les llama funciones de activación. -->
@@ -65,8 +65,8 @@ cualquier función continua. La función $h$ (que se llama
 **función de activación** no es especial: funciones
 continuas con forma similar a la sigmoide (logística) pueden usarse también (por ejemplo,
 arcotangente, o lineal rectificada). La idea es que cualquier función se puede aproximar
-mediante superposición de funciones tipo sigmoide (ver por ejemplo 
-Cybenko 1989, Approximation by 
+mediante superposición de funciones tipo sigmoide (ver por ejemplo
+Cybenko 1989, Approximation by
 Superpositions of a Sigmoidal Function).
 <!-- - Con suficientes datos puedes aproximar la "p" al nivel que tu quieras. -->
 
@@ -95,19 +95,19 @@ donde adicionalmente graficamos 30 datos simulados.  Recordamos que queremos
 ajustar la curva roja, que da la probabilidad condicional de clase.
 Podríamos ajustar
 un modelo de regresión logística expandiendo manualmente el espacio de entradas
-agregando $x^2$, y obtendríamos un ajuste razonable. Pero la idea aquí es 
+agregando $x^2$, y obtendríamos un ajuste razonable. Pero la idea aquí es
 que podemos crear entradas derivadas de forma automática.
 
 Supongamos entonces que pensamos crear dos entradas $a_1$ y $a_2$, funciones
 de $x_1$, y luego predecir $g.1$, la clase, en función de estas dos entradas.
 Por ejemplo, podríamos tomar:
 
-```{r, out.width=500, echo=FALSE, fig.width=7, fig.asp=1}
+```{r, out.width="400px", echo=FALSE, fig.width=8, fig.height=5}
  gr <- graph(c(1,2,1,3,2,4,3,4))
  plot(gr, layout = matrix(c(-2,0,0,1,0,-1,2,0), byrow=T, ncol=2),
-      vertex.label=c(expression(X[1]),expression(a[1]),expression(a[2]),expression(p[1])), 
-      vertex.size=50, vertex.color='salmon', vertex.label.cex=1.5,
-   vertex.label.color='white',vertex.frame.color=NA
+      vertex.label=c(expression(X[1]),expression(a[1]),expression(a[2]),expression(p[1])),
+      vertex.size=30, vertex.color='salmon', vertex.label.cex=1.5, asp = 0.5,
+   vertex.frame.color=NA
    )
 ```
 
@@ -148,7 +148,7 @@ geom_line(data=dat_p, aes(x=x,y=p), col='red') +ylim(c(0,1))+
 ```
 
 que da un ajuste razonable. Este es un ejemplo de cómo
-la mezcla de dos funciones logísticas puede 
+la mezcla de dos funciones logísticas puede
 replicar esta función con forma de chipote.
 
 <!-- Esto se hizo manualmente, pero el chiste es que se haga de forma automatizada. -->
@@ -157,9 +157,9 @@ replicar esta función con forma de chipote.
 ### ¿Cómo ajustar los parámetros? {-}
 
 Para encontrar los mejores parámetros,
-minimizamos la devianza sobre los 
-parámetros $\beta_0,\beta_1,\beta_{1,0},\beta_{1,1},
-\beta_{2,0},\beta_{2,1}$. 
+minimizamos la devianza sobre los
+parámetros $\beta_0,\beta_1,\beta_2$ y
+$\beta_{1,0},\beta_{1,1},\beta_{2,0},\beta_{2,1}$.
 
 Veremos más adelante que conviene hacer esto usando descenso o en gradiente
 o descenso en gradiente estocástico, pero por el momento
@@ -215,8 +215,8 @@ la función *optim* de R:
 ```{r}
 set.seed(5)
 salida <- optim(rnorm(7), dev, method = 'BFGS') # inicializar al azar punto inicial
-salida
 beta <- salida$par
+beta
 ```
 
 Y ahora podemos graficar con el vector $\beta$ encontrado:
@@ -231,18 +231,16 @@ geom_line(data = dat_p, aes(x = x, y = p), col='red') +ylim(c(0,1))+
 ```
 
 Los coeficientes estimados, que en este caso muchas veces se llaman
-*pesos*, son: 
+*pesos*, son:
 ```{r}
 beta %>% round(2)
 ```
 
-<!-- Los primeros dos coeficientes se ven grandes. -->
-
-que parecen ser muy grandes. Igualmente, de la figura
+que parecen ser muy grandes.  Igualmente, de la figura
 vemos que el ajuste no parece ser muy estable (esto se puede
-confirmar corriendo con distintos conjuntos de entrenamiento). 
+confirmar corriendo con distintos conjuntos de entrenamiento).
 Podemos entonces regularizar ligeramente la devianza
-para resolver este problema. En primer lugar, definimos la 
+para resolver este problema. En primer lugar, definimos la
 devianza regularizada (ridge), donde penalizamos todos los coeficientes
 que multiplican a una variable, pero no los intercepts:
 
@@ -253,7 +251,7 @@ devianza_reg <- function(x, y, lambda){
    devianza <- function(beta){
          p <- feed_fow(beta, x)
          # en esta regularizacion quitamos sesgos, pero puede hacerse también con sesgos.
-        - 2 * mean(y*log(p) + (1-y)*log(1-p)) + lambda*sum(beta[-c(1,3,5)]^2) 
+        - 2 * mean(y*log(p) + (1-y)*log(1-p)) + lambda*sum(beta[-c(1,3,5)]^2)
    }
   devianza
 }
@@ -263,7 +261,6 @@ devianza_reg <- function(x, y, lambda){
 dev_r <- devianza_reg(x_1, g_1, 0.001) # crea función dev
 set.seed(5)
 salida <- optim(rnorm(7), dev_r, method='BFGS') # inicializar al azar punto inicial
-salida
 beta <- salida$par
 dev(beta)
 p_2 <- feed_fow(beta, x)
@@ -276,17 +273,19 @@ geom_line(data = dat_p, aes(x = x, y = p), col='red') +ylim(c(0,1))+
 
 y obtenemos un ajuste mucho más estable. Podemos usar también
 keras. El modelo, con una capa intermedia de dos unidades, y regularización
-ridge para los coeficientes, y optimización por descenso 
+ridge para los coeficientes, y optimización por descenso
 en gradiente se define como:
 
 ```{r, message = FALSE}
 library(keras)
-set.seed(923)
+# para reproducibilidad:
+tensorflow::tf$random$set_seed(1123)
+# construir modelo
 ejemplo_mod <- keras_model_sequential()
-ejemplo_mod %>% 
-   layer_dense(units = 2, 
-    activation = "sigmoid", kernel_regularizer = regularizer_l2(0.0005)) %>% 
-  layer_dense(units = 1, 
+ejemplo_mod %>%
+   layer_dense(units = 2,
+    activation = "sigmoid", kernel_regularizer = regularizer_l2(0.0005)) %>%
+  layer_dense(units = 1,
     activation = "sigmoid", kernel_regularizer = regularizer_l2(0.0005))
 ```
 
@@ -294,11 +293,11 @@ ejemplo_mod %>%
 x_mat <- as.matrix(datos$x_1, ncol = 1)
 y <- datos$g_1
 # usamos devianza como medida de error y descenso en gradiente:
-ejemplo_mod %>% compile(loss = "binary_crossentropy", 
+ejemplo_mod %>% compile(loss = "binary_crossentropy",
   optimizer = optimizer_sgd(lr = 3))
 # nota: esta learning rate (lr) es demasiado alta para problemas típicos
-historia <- ejemplo_mod %>% 
-  fit(x_mat, y, 
+historia <- ejemplo_mod %>%
+  fit(x_mat, y,
       batch_size = nrow(x_mat), epochs = 3000, verbose = 0)
 ```
 
@@ -314,7 +313,7 @@ geom_line(data = dat_p, aes(x = x, y = p), col='red') +ylim(c(0,1))+
 ```
 
 Los coeficientes obtenidos están aquí: Nótese: la primera componente de
-la lista son los coeficientes de la unidad 1 y 2 para $x$. La segunda 
+la lista son los coeficientes de la unidad 1 y 2 para $x$. La segunda
 son los sesgos u ordenadas al origen, la tercera los coeficientes
 de la respuesta para las unidades 1 y 2, y el cuarto es el sesgo u ordenada
 al origen de la unidad de salida:
@@ -323,7 +322,7 @@ al origen de la unidad de salida:
 get_weights(ejemplo_mod)
 ```
 
-**Ejercicio**: compara los coeficientes que obtuviste en este ejemplo con los anteriores. 
+**Ejercicio**: compara los coeficientes que obtuviste en este ejemplo con los anteriores.
 
 
 #### Ejercicio {#ejercicio-red}
@@ -361,7 +360,7 @@ ggplot(dat, aes(x=x1, y=x2)) + geom_tile(aes(fill=p))
 ```
 
 Esta función puede entenderse como un o exclusivo: la probabilidad es alta
-sólo cuando $x_1$ y $x_2$ tienen valores opuestos ($x_1$ grande pero $x_2$ chica y viceversa). 
+sólo cuando $x_1$ y $x_2$ tienen valores opuestos ($x_1$ grande pero $x_2$ chica y viceversa).
 
 No es posible modelar esta función mediante el modelo logístico (sin interacciones).
 Pero podemos incluir la interacción en el modelo logístico o intentar
@@ -376,12 +375,23 @@ dat_ent <- tibble(x1 = runif(n,0,1), x2 = runif(n, 0, 1)) %>%
   mutate(y = rbinom(n, 1, p))
 mod_1 <- glm(y ~ x1 + x2, data = dat_ent, family = 'binomial')
 mod_1
+```
+
+El resultado del modelo logístico no es bueno:
+
+```{r}
 table(predict(mod_1) > 0.5, dat_ent$y)
+```
+
+Sin embargo, agregando una interacción lo mejoramos considerablemente
+(examina la devianza y el error de clasificación):
+
+```{r}
 mod_2 <- glm(y ~ x1 + x2 + x1:x2, data = dat_ent, family = 'binomial')
 mod_2
 table(predict(mod_2) > 0.5, dat_ent$y)
 ```
- 
+
  Observese la gran diferencia de devianza entre los dos modelos (en este caso,
  el sobreajuste no es un problema).
 
@@ -390,18 +400,18 @@ Ahora consideramos qué red neuronal puede ser apropiada.
 ```{r}
 reg <- regularizer_l2(0.0001)
 mod_inter <- keras_model_sequential()
-mod_inter %>% 
+mod_inter %>%
   layer_dense(units = 4, kernel_regularizer = reg, activation = "sigmoid",
               name = "capa_intermedia", input_shape = c(2)) %>%
-  layer_dense(units = 1, kernel_regularizer = reg, name = "capa_final") %>% 
+  layer_dense(units = 1, kernel_regularizer = reg, name = "capa_final") %>%
   layer_activation("sigmoid")
 ```
 
 ```{r}
-mod_inter %>% compile(loss = "binary_crossentropy", 
+mod_inter %>% compile(loss = "binary_crossentropy",
   optimizer = optimizer_sgd(lr = 0.7))
-historia <- mod_inter %>% 
-  fit(dat_ent %>% select(x1, x2) %>% as.matrix, dat_ent$y, 
+historia <- mod_inter %>%
+  fit(dat_ent %>% select(x1, x2) %>% as.matrix, dat_ent$y,
       batch_size = nrow(dat_ent), epochs = 10000, verbose = 0)
 ```
 
@@ -421,7 +431,7 @@ vamos a hacer el cálculo de la red a mano. La función feed forward es:
 ```{r}
 beta <- get_weights(mod_inter)
 feed_fow <- function(beta, x){
-  a <- h(t(beta[[1]]) %*% x + as.matrix(beta[[2]], 2, 1)) 
+  a <- h(t(beta[[1]]) %*% x + as.matrix(beta[[2]], 2, 1))
   p <- h(t(beta[[3]]) %*% a + as.matrix(beta[[4]], 1, 1))
   p
 }
@@ -442,7 +452,7 @@ predict(capa_1, mat_entrada) %>% round(2)
 Y los pesos para calcular esta capa son:
 
 ```{r}
-beta[1:2] 
+beta[1:2]
 ```
 Los pesos de la última capa son:
 
@@ -451,7 +461,7 @@ beta[3:4]
 ```
 **Ejercicio**: interpreta la red en términos de qué unidades
 están *encendidas* (valor cercano a 1) o *apagadas* (valor cercano a 0).
-¿Puedes ajustar este modelo con tres unidades intermedias? Haz varias pruebas: ¿qué dificultades
+¿Puedes ajustar este modelo con dos tres unidades intermedias? Haz varias pruebas: ¿qué dificultades
 encuentras?
 
 ## Cálculo en redes: feed-forward
@@ -461,7 +471,7 @@ básica de redes neuronales y cómo se hacen cálculos en las redes.
 
 ```{block2, type='comentario'}
 A las variables originales les llamamos *capa de entrada* de la red,
-y a la variable de salida *capa de salida*. Puede haber más de una 
+y a la variable de salida *capa de salida*. Puede haber más de una
 capa intermedia. A estas les llamamos *capas ocultas*.
 
 Cuando todas las conexiones posibles de cada capa a la siguiente están presente,
@@ -469,14 +479,14 @@ decimos que la red es *completamente conexa*.
 ```
 
 
-```{r, echo=FALSE, fig.width=7}
+```{r, echo=FALSE, fig.width=8, fig.height=5, out.width = "500px"}
  gr <- graph(
    c(1,4,1,5,1,6,2,4,2,5,2,6,2,4,2,5,2,6,3,4,3,5,3,6,4,7,4,8,5,7,5,8,6,7,6,8,7,8,7,9,8,9))
 plot(gr, layout=matrix(c(-1,1,-1,0,-1,-1,0,1,0,0,0,-1,1,0.5,1,-0.5,2,0), byrow=T,ncol=2),
      vertex.label=c(expression(a[1]^{(1)}), expression(a[2]^{(1)}),expression(a[3]^{(1)}),
                     expression(a[1]^{(2)}),expression(a[2]^{(2)}),expression(a[3]^{(3)}),
                     expression(a[1]^{(3)}),expression(a[2]^{(3)}),                        expression(a[1]^{(4)})),
-      vertex.size=50, vertex.color=c('salmon'),
+      vertex.size=30, vertex.color=c('salmon'), asp = 0.5, vertex.label.cex = 1.5,
      vertex.frame.color=NA, edge.curved=FALSE)
 ```
 
@@ -488,21 +498,21 @@ sucesivamente hasta que llegamos a la capa final.
 
 ## Notación {-}
 
-Sea $L$ el número total de capas. En primer lugar, para un cierto caso de entrada $x = (x_1,x_2,\ldots, x_p)$, 
+Sea $L$ el número total de capas. En primer lugar, para un cierto caso de entrada $x = (x_1,x_2,\ldots, x_p)$,
 denotamos por:
 
 - $a^{(l)}_j$ el valor que toma la unidad $j$ de la capa $l$, para $j=0,1,\ldots, n_{l}$, donde
 $n_l$ es el número de unidades de la capa $l$.
 - Ponemos $a^{(l)}_0=1$ para lidiar con los sesgos.
-- En particular, ponemos $a^{(1)}_j = x_j$, que son los valores de las entradas (primera capa)
+- *En particular, ponemos $a^{(1)}_j = x_j$, que son los valores de las entradas (primera capa)
 - Para clasificación binaria, la última capa solo tiene un elemento, que es
-$p_1 = a^{(L)}$. Para un problema de clasificación en $K>2$ clases, tenemos que 
+$p_1 = a^{(L)}$. Para un problema de clasificación en $K>2$ clases, tenemos que
 la última capa es de tamaño $K$:
 $p_1 = a^{(L)}_1, p_2 = a^{(L)}_2,\ldots,  p_K = a^{(L)}_K$
 
 Adicionalmente, escribimos
 
-$\theta_{i,k}^{(l)}=$ es el peso de entrada $a_{k}^{(l-1)}$  de capa $l-1$ 
+$\theta_{i,k}^{(l)}=$ es el peso de entrada $a_{k}^{(l-1)}$  de capa $l-1$
 en la entrada $a_{i}^{(l)}$ de la capa $l$.
 
 Los sesgos están dados por
@@ -519,14 +529,17 @@ $$a_2^{(3)} = h(\theta_{2,0}^{(2)} + \theta_{2,1}^{(2)} a_1^{(2)}+ \theta_{2,2}^
 Como se ilustra en la siguiente gráfica:
 
 
-```{r, echo=FALSE, fig.width=7}
+```{r, echo=FALSE, fig.width=8, fig.height = 5, out.width = "550px"}
  gr <- graph(
    c(c(1,4,1,5,2,4,2,5,3,4,3,5)))
  plot(gr, layout = matrix(c(-6,2,-6,0,-6,-2,0,1,0,-1), byrow=T, ncol=2),
       vertex.label=c(expression(a[1]^{(2)}),expression(a[2]^{(2)}),expression(a[3]^{(2)}),
-        expression(a[1]^{(3)}), expression(a[2]^{(3)})), 
-      vertex.size=50, vertex.color=c('salmon','salmon','salmon','red','red'), vertex.label.cex=1.5,
+        expression(a[1]^{(3)}), expression(a[2]^{(3)})),
+      vertex.size=30, vertex.color=c('salmon','salmon','salmon','red','red'), vertex.label.cex=1.5, asp= 0.5,
+      edge.color = c("red", "gray", "red", "gray", "red", "gray"),
+      edge.label.color = c("black", "gray50"),
       vertex.label.color='white',vertex.frame.color=NA,
+      edge.label.cex = 1.2,
    edge.label=c(expression(theta[11]^{(2)}),expression(theta[21]^{(2)}),
      expression(theta[12]^{(2)}),  expression(theta[22]^{(2)}),
       expression(theta[13]^{(2)}), expression(theta[23]^{(2)})))
@@ -534,15 +547,18 @@ Como se ilustra en la siguiente gráfica:
 
 Para visualizar las ordenadas (que también se llaman  **sesgos** en este contexto),
 ponemos $a_{0}^{(2)}=1$.
-```{r, echo=FALSE, fig.width=7, fig.asp = 0.8}
+```{r, echo=FALSE, fig.width=8, fig.height = 5, out.width = "550px"}
  gr <- graph(
    c(c(1,5,1,6,2,5,2,6,3,5,3,6,4,5,4,6)))
  plot(gr, layout = matrix(c(-4,4,-4,2,-4,0,-4,-2,0,1,0,-1), byrow=T, ncol=2),
       vertex.label=c(expression(a[0]^{(2)}), expression(a[1]^{(2)}),
         expression(a[2]^{(2)}),expression(a[3]^{(2)}),
-        expression(a[1]^3), expression(a[2]^3)), 
-      vertex.size=50, 
-   vertex.color=c('gray','salmon','salmon','salmon','red','red'), vertex.label.cex=1.5,
+        expression(a[1]^3), expression(a[2]^3)),
+      vertex.size=30,
+   vertex.color=c('gray','salmon','salmon','salmon','red','red'),
+         edge.color = c("red", "gray", "red", "gray", "red", "gray", "red", "gray"),
+      edge.label.color = c("black", "gray50"),
+   vertex.label.cex=1.5, asp = 0.5,
       vertex.label.color='white',vertex.frame.color=NA,
    edge.label=c(expression(theta[10]^{(2)}),expression(theta[20]^{(2)}),
      expression(theta[11]^{(2)}),expression(theta[21]^{(2)}), expression(theta[12]^{(2)}),  expression(theta[22]^{(2)}), expression(theta[13]^{(2)}), expression(theta[23]^{(2)})))
@@ -553,12 +569,12 @@ ponemos $a_{0}^{(2)}=1$.
 
 Consideremos propagar a la capa 3 a partir de la capa 2. Usaremos los siguientes pesos para capa 3 y valores de la
 capa 2 (en gris están los sesgos):
-```{r, echo =FALSE, fig.width=7}
+```{r, echo =FALSE, fig.width=8, fig.height = 5, out.width = "500px"}
  gr <- graph(
    c(c(1,4,1,5,2,4,2,5,3,4,3,5, 6, 4, 6, 5)))
  plot(gr, layout = matrix(c(-4,3,-4,0,-4,-7,0,2,0,-2, -4, -3), byrow=T, ncol=2),
       vertex.label=c('-2','5','1','a_1 ?','a_2 ?','3'), vertex.label.cex=1.5,
-      vertex.size=50, vertex.color=c('salmon','salmon','gray','red','red'), vertex.label.cex=2,
+      vertex.size=30, vertex.color=c('salmon','salmon','gray','red','red'), vertex.label.cex=2, asp =0.5, edge.label.cex = 1.5,
       vertex.label.color='white',vertex.frame.color=NA,
    edge.label=c(1.5,2,-1,0.5,3,1,-0.5,-0.2))
 ```
@@ -570,7 +586,7 @@ y los pesos son, para la primera unidad:
 $$\theta^{(2)}_{1,0} = 3,  \,\,\, \theta^{(2)}_{1,1} = 1.5,\,\,\,\theta^{(2)}_{1,2} = -1,\,\,\theta^{(2)}_{1,3} = -0.5 $$
 y para la segunda unidad
 $$\theta^{(2)}_{2,0} = 1,  \,\,\, \theta^{(2)}_{2,1} = 2,\,\,\,\theta^{(2)}_{2,2} = 0.5,\,\, \theta^{(2)}_{2,3} = -0.2$$
-Y ahora queremos calcular los valores que toman las unidades de la capa 3, 
+Y ahora queremos calcular los valores que toman las unidades de la capa 3,
 que son $a^{(3)}_1$ y  $a^{(3)}_2$$
 
 Para hacer feed forward a la siguiente capa, hacemos entonces
@@ -594,19 +610,19 @@ a_3
 ```
 
 
-```{r, echo =FALSE, fig.width=7}
+```{r, echo =FALSE, fig.width=8, fig.height = 5, out.width = "500px"}
  gr <- graph(
    c(c(1,4,1,5,2,4,2,5,3,4,3,5, 6, 4, 6, 5)))
- plot(gr, layout = matrix(c(-4,1,-4,0,-4,-2,0,1,0,-1, -4, -1), byrow=T, ncol=2),
-      vertex.label=c('-2','5','1','0.002','0.250','3'), vertex.label.cex=1.5,
-      vertex.size=50, vertex.color=c('salmon','salmon','gray','red','red'), vertex.label.cex=0.5,
+ plot(gr, layout = matrix(c(-4,3,-4,0,-4,-7,0,2,0,-2, -4, -3), byrow=T, ncol=2),
+      vertex.label=c('-2','5','1','0.002','0.250','3'),
+      vertex.size=30, vertex.color=c('salmon','salmon','gray','red','red'), vertex.label.cex=1.5,asp =0.5, edge.label.cex = 1.5,
       vertex.label.color='white',vertex.frame.color=NA,
    edge.label=c(1.5,2,-1,0.5,3,1,-0.5,-0.2))
 ```
 
 
 
-## Feed forward
+## Algoritmo de Feed forward
 
 Para calcular los valores de salida de una red a partir de pesos y datos de entrada,
 usamos el algoritmo feed-forward, calculando capa por capa.
@@ -621,7 +637,7 @@ Para la primera capa oculta, o la segunda capa
 $$a^{(2)}_j = h\left( \theta_{j,0}^{(1)}+ \sum_{k=1}^{n_1}  \theta_{j,k}^{(1)}  a^{(1)}_k    \right), j=1\ldots,n_2$$
 para la $l$-ésima capa:
 $$a^{(l)}_j = h\left( \theta_{j,0}^{(l-1)}+ \sum_{k=1}^{n_{l-1}}  \theta_{j,k}^{(l-1)}  a^{(l-1)}_k    \right), j=1\ldots,n_{l}$$
-y así sucesivamente. 
+y así sucesivamente.
 Para la capa final o capa de salida (para problema binario), suponiendo
 que tenemos $L$ capas ($L-2$ capas ocultas):
 $$p_1 = h\left(    \theta_{1,0}^{(L-1)}+ \sum_{k=1}^{n_{L-1}}  \theta_{1,k}^{(L-1)}  a^{(L-1)}_k     \right).$$
@@ -659,22 +675,22 @@ $$ a^{(2)} = h(\Theta^{(1)}a^{(1)})$$
 - Capa $l$ (oculta)
 $$ a^{(l)} = h(\Theta^{(l-1)}a^{(l-1)})$$
 - Capa de salida:
-    
+
 En un problema de clasificación binaria, la capa de salida se calcula como
 en regresión logística:
 $$a^{(L)}= p = h(\Theta^{(L-1)}a^{(L-1)})$$
 donde $h$ se aplica componente a componente sobre los vectores correspondientes. Nótese
 que feed-foward consiste principalmente de multiplicaciones de matrices con
 algunas aplicaciones de $h$
-    
+
 Para un problema de regresión, la última capa se calcula como en regresión lineal:
-    
+
 $$a^{(L)} = p = \Theta^{(L-1)}a^{(L-1)}$$
 ```
 
 
 
-## Backpropagation: cálculo del gradiente (clasificación binaria)
+## Algoritmo de Backpropagation: cálculo del gradiente (clasificación binaria)
 
 Más adelante, para ajustar los pesos y sesgos de las redes (valores $\theta$),
 utilizaremos descenso en gradiente y otros algoritmos derivados del gradiente
@@ -706,20 +722,20 @@ $$h(z)=\frac{1}{1+e^{-z}}.$$
 Necesitaremos su derivada, que está dada por (cálculala):
 $$h'(z) = h(z)(1-h(z))$$
 
-### Cálculo para un caso de entrenamiento
+### Cálculo para un caso de entrenamiento {-}
 
-Como hicimos en regresión logística, primero simplificamos el problema 
-y consideramos calcular 
+Como hicimos en regresión logística, primero simplificamos el problema
+y consideramos calcular
 las parciales *para un solo caso de entrenamiento* $(x,y)$:
 $$ D=  -\left ( y\log (p_1(x)) + (1-y)\log (1-p_1(x))\right) . $$
 
 Después sumaremos sobre toda la muestra de entrenamiento. Entonces queremos
-calcular 
+calcular
 $$\frac{\partial D}{\partial \theta_{j,k}^{(l)}}$$
 
-Y escribiremos, con la notación de arriba, 
+Y escribiremos, con la notación de arriba,
 $$a^{(l+1)}_j = h(z^{(l+1)}_j)$$
-donde 
+donde
 $$z^{(l+1)} = \Theta^{(l)} a^{(l)},$$
 que coordenada a coordenada se escribe como
 $$z^{(l+1)}_j =  \sum_{k=0}^{n_{l}}  \theta_{j,k}^{(l)}  a^{(l)}_k$$
@@ -738,7 +754,7 @@ $$\frac{\partial D}{\partial \theta_{j,k}^{(l)}} =
 Pero si vemos dónde aparece $\theta_{j,k}^{(l)}$ en la gráfica de la red:
 
 $$ \cdots a^{(l)}_k \xrightarrow{\theta_{j,k}^{(l)}} a^{(l+1)}_j  \cdots \rightarrow  D$$
-Entonces podemos concluir  que 
+Entonces podemos concluir  que
 $\frac{\partial a_t^{(l+1)}}{\partial \theta_{j,k}^{(l)}} =0$ cuando  $t\neq j$ (pues no
  dependen de $\theta_{j,k}^{(l)}$),
 
@@ -757,15 +773,15 @@ y las $a_k^{(l)}$ no dependen de $\theta_{j,k}^{(l)}$, tenemos por la regla de l
 \frac{\partial a_j^{(l+1)}}{\partial \theta_{j,k}^{(l)} } = h'(z_j^{(l+1)})a_k^{(l)}.
 \end{equation}
 
-Esta última expresión podemos calcularla pues sólo requiere la derivada de $h$ y 
+Esta última expresión podemos calcularla pues sólo requiere la derivada de $h$ y
 los valores otenidos en el paso de feed-forward.
 
 #### Paso 2: Obtener fórmula recursiva  {-}
 
 Así que sólo nos queda calcular las parciales ($j = 1,\ldots, n_l$)
-$$\frac{\partial D}{\partial a_j^{(l)}}$$ 
+$$\frac{\partial D}{\partial a_j^{(l)}}$$
 
-Para obtener una fórmula recursiva para esta cantidad (hacia atrás), 
+Para obtener una fórmula recursiva para esta cantidad (hacia atrás),
 aplicamos otra vez regla de la cadena, pero con respecto a la capa $l$ (ojo: queremos obtener
 una fórmula recursiva!):  
 
@@ -776,10 +792,10 @@ que se puede entender a partir de este diagrama:
 ```{r, echo=FALSE, fig.width=7}
  gr <- graph(
    c(1,2,1,3,1,4,2,5,3,5,4,5,1,6,1,7,1,8,1,9,6,5,7,5,8,5,9,5))
-plot(gr, layout=matrix(c(-1,0,0,1,0,0,0,-1,1,0,0,0.6,0,0.3,0,-0.6,0,-0.3), 
+plot(gr, layout=matrix(c(-1,0,0,1,0,0,0,-1,1,0,0,0.6,0,0.3,0,-0.6,0,-0.3),
                        byrow=T,ncol=2),
       vertex.size=c(rep(50,5), rep(1,4)), vertex.color=c(rep('salmon',5),rep('white',5)),
-      vertex.label=c(expression(a[j]^{(l)}), 
+      vertex.label=c(expression(a[j]^{(l)}),
                      expression(a[1]^{(l+1)}),expression(a[s]^{(l+1)}),
                      expression(a[n]^{(l+1)}),
                     expression(D), rep('',4)),
@@ -825,7 +841,7 @@ Tenemos que si $l=2,\ldots,L-1$, entonces podemos escribir (usando \@ref(eq:delt
 como fórmula recursiva:
 
 \begin{equation}
-\delta_j^{(l)} 
+\delta_j^{(l)}
 = \left (\sum_{s=1}^{n_l} \delta_s^{(l+1)} \theta_{s,j}^{(l)}\right ) h'(z_j^{(l)}),
   (\#eq:delta-recursion)
 \end{equation}
@@ -854,7 +870,7 @@ Muchas veces es útil escribir una versión vectorizada (importante para impleme
 
 Ahora podemos escribir estas ecuaciones en forma vectorial. En primer lugar,
 $$\delta^{(L)}=p-y.$$
-Y además se puede ver de la ecuación \@ref(eq:delta-recursion) que 
+Y además se puede ver de la ecuación \@ref(eq:delta-recursion) que
 ($\Theta_{*}^{(l+1)}$ denota la matriz de pesos *sin* la columna correspondiente al sesgo):
 
 \begin{equation}
@@ -867,7 +883,7 @@ donde $\circ$ denota el producto componente a componente.
 Ahora todo ya está calculado. Lo interesante es que las $\delta^{(l)}$ se calculan
 de manera recursiva.
 
-### Algoritmo de backpropagation
+### Algoritmo de backpropagation {-}
 
 ```{block2, type='comentario'}
 **Backpropagation** Para problema de clasificación con regularización $ \lambda \geq 0 $.
@@ -899,7 +915,7 @@ algunas aplicaciones de $h$ y acumulaciones, igual que feed-forward.
 
 ## Ajuste de parámetros (introducción)
 
-Consideramos la versión con regularización ridge (también llamada L2) 
+Consideramos la versión con regularización ridge (también llamada L2)
 de la devianza de entrenamiento como nuestro función objetivo:
 
 ```{block2, type='comentario'}
@@ -915,8 +931,8 @@ Veremos el proceso de ajuste, selección de arquitectura, etc. más adelante.
 Por el momento hacemos unas observaciones acerca de este problema de minimización:
 
 - Hay varios algoritmos para minimizar esta devianza,
-algunos avanzados incluyendo información de segundo orden (como Newton), pero 
-actualmente las técnicas más populares, para redes grandes, están 
+algunos avanzados incluyendo información de segundo orden (como Newton), pero
+actualmente las técnicas más populares, para redes grandes, están
 derivadas de descenso en gradiente. Más
 específicamente, una variación, que es *descenso estocástico*.
 
@@ -940,7 +956,7 @@ hay varios mínimos.
 - Todo esto dificulta el
 entrenamiento de redes neuronales grandes. Para redes grandes, ni siquiera esperamos a alcanzar
 un mínimo local, sino que nos a veces detenemos prematuramente cuando obtenemos
-el mejor desempeño posible. 
+el mejor desempeño posible.
 
 
 - Para este problema, no tiene sentido comenzar las iteraciones con todos los pesos
@@ -958,7 +974,7 @@ del gradiente.
 - Generalmente los pesos se inicializan al azar con variables independientes
 gaussianas o uniformes centradas en cero, y con varianza chica
 (por ejemplo $U(-0.5,0.5)$). Una recomendación es usar $U(-1/\sqrt{m}, 1/\sqrt{m})$
-donde $m$ es el número de entradas. En general, hay que experimentar con este 
+donde $m$ es el número de entradas. En general, hay que experimentar con este
 parámetro.
 
 
@@ -967,19 +983,19 @@ El proceso para ajustar una red es entonces:
 
 - Definir número de capas ocultas, número de neuronas por cada capa, y un valor del parámetro de regularización. Estandarizar las entradas.
 - Seleccionar parámetros al azar para $\Theta^{(2)},\Theta^{(3)},\ldots, \Theta^{(L)}$.
-Se toman, por ejemplo, normales con media 0 y varianza chica. 
+Se toman, por ejemplo, normales con media 0 y varianza chica.
 - Correr un algoritmo de minimización de la devianza mostrada arriba. **Es necesario experimentar con los parámetros del algoritmo de minimización**.
 - Verificar convergencia del algoritmo a un mínimo local (o el algoritmo no está mejorando).
-- Predecir usando el modelo ajustado. 
+- Predecir usando el modelo ajustado.
 
 
 Finalmente, podemos probar distintas arquitecturas y valores del parámetros de regularización,
 para afinar estos parámetros según validación cruzada o una muestra de validación.
 
 
-### Ejemplo
+### Ejemplo {-}
 
-Consideramos una arquitectura de dos capas para el problema de diabetes 
+Consideramos una arquitectura de dos capas para el problema de diabetes
 
 Escalamos y preparamos los datos:
 
@@ -988,9 +1004,9 @@ diabetes_ent <- MASS::Pima.tr
 diabetes_pr <- MASS::Pima.te
 x_ent <- diabetes_ent %>% select(-type) %>% as.matrix
 x_ent_s <- scale(x_ent)
-x_valid <- diabetes_pr %>% select(-type) %>% as.matrix 
+x_valid <- diabetes_pr %>% select(-type) %>% as.matrix
 x_valid_s <- x_valid %>%
-  scale(center = attr(x_ent_s, 'scaled:center'), 
+  scale(center = attr(x_ent_s, 'scaled:center'),
         scale = attr(x_ent_s,  'scaled:scale'))
 y_ent <- as.numeric(diabetes_ent$type == 'Yes')
 y_valid <- as.numeric(diabetes_pr$type == 'Yes')
@@ -1001,21 +1017,20 @@ Para definir la arquitectura de dos capas con:
 
 - 10 unidades en cada capa
 - función de activación sigmoide,
-- regularización L2 (ridge), 
+- regularización L2 (ridge),
 - salida logística ($p_1$), escribimos:
 
 
 ```{r}
-set.seed(923)
-modelo_tc <- keras_model_sequential() 
+modelo_tc <- keras_model_sequential()
 # no es necesario asignar a nuevo objeto, modelo_tc es modificado al agregar capas
-modelo_tc %>% 
-  layer_dense(units = 10, activation = 'sigmoid', 
-              kernel_regularizer = regularizer_l2(l = 1e-3), 
+modelo_tc %>%
+  layer_dense(units = 10, activation = 'sigmoid',
+              kernel_regularizer = regularizer_l2(l = 1e-3),
               kernel_initializer = initializer_random_uniform(minval = -0.5, maxval = 0.5),
               input_shape=7) %>%
-  layer_dense(units = 10, activation = 'sigmoid', 
-              kernel_regularizer = regularizer_l2(l = 1e-3), 
+  layer_dense(units = 10, activation = 'sigmoid',
+              kernel_regularizer = regularizer_l2(l = 1e-3),
               kernel_initializer = initializer_random_uniform(minval = -0.5, maxval = 0.5)) %>%
   layer_dense(units = 1, activation = 'sigmoid',
               kernel_regularizer = regularizer_l2(l = 1e-3),
@@ -1030,7 +1045,7 @@ en tensorflow:
 ```{r}
 modelo_tc %>% compile(
   loss = 'binary_crossentropy',
-  optimizer = optimizer_sgd(lr = 0.5),
+  optimizer = optimizer_sgd(lr = 0.3),
   metrics = c('accuracy','binary_crossentropy'))
 ```
 
@@ -1039,9 +1054,9 @@ Iteramos con descenso en gradiente y monitoreamos el error de validación. Hacem
 
 ```{r}
 iteraciones <- modelo_tc %>% fit(
-  x_ent_s, y_ent, 
+  x_ent_s, y_ent,
   #batch size mismo que nrow(x_ent_s) es descenso en grad.
-  epochs = 500, batch_size = nrow(x_ent_s), 
+  epochs = 1000, batch_size = nrow(x_ent_s),
   verbose = 0,
   validation_data = list(x_valid_s, y_valid)
 )
@@ -1050,7 +1065,7 @@ iteraciones <- modelo_tc %>% fit(
 ```{r}
 score <- modelo_tc %>% evaluate(x_valid_s, y_valid)
 score
-tab_confusion <- table(modelo_tc %>% predict_classes(x_valid_s),y_valid) 
+tab_confusion <- table(modelo_tc %>% predict_classes(x_valid_s),y_valid)
 tab_confusion
 prop.table(tab_confusion, 2)
 ```
@@ -1060,7 +1075,7 @@ validación) para diagnosticar mejoras:
 
 ```{r, fig.width=8, fig.height=8}
 df_iteraciones <- as_tibble(iteraciones)
-ggplot(df_iteraciones, aes(x=epoch, y=value, colour=data, group=data)) + 
+ggplot(df_iteraciones, aes(x=epoch, y=value, colour=data, group=data)) +
   geom_line() + geom_point() + facet_wrap(~metric, ncol=1, scales = 'free')
 ```
 
@@ -1071,9 +1086,9 @@ en *Tensorflow* (que es lo que usa *keras* para hacer los cálculos):
 
 ```{r, eval = FALSE}
 iteraciones <- modelo_tc %>% fit(
-  x_ent_s, y_ent, 
+  x_ent_s, y_ent,
   #batch size mismo que nrow(x_ent_s) es descenso en grad.
-  epochs = 500, batch_size = nrow(x_ent_s), 
+  epochs = 500, batch_size = nrow(x_ent_s),
   verbose = 0,
   callbacks = callback_tensorboard("logs/diabetes/run_1"),
   validation_data = list(x_valid_s, y_valid)
