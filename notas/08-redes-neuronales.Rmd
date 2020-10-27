@@ -46,6 +46,10 @@ library(tidyverse)
       vertex.size=30, vertex.color='salmon', vertex.label.cex=1.5, asp = 0.5,
       vertex.frame.color=NA)
 ```
+<!-- - Con esto vemos que las redes neuronales te permiten hacer combinaciones fáciles entre muchas variables. -->
+<!-- - La idea es hacer transformaciones no lineales en las redes neuronales. -->
+<!-- - Para el último nodo podríamos aplicar función lineal (para regresión) o no lineal (si queremos probabilidad). -->
+
 
 **Observaciones:**
 
@@ -180,6 +184,7 @@ feed_fow <- function(beta, x){
 }
 ```
 
+<!-- - Los interceptos del código de arriba son los sesgos. -->
 <!-- Se le llama "feed_forward" porque meter betas y te da "p" -->
 
 Nótese que simplemente seguimos el diagrama mostrado arriba
@@ -201,6 +206,8 @@ devianza_fun <- function(x, y){
   devianza
 }
 ```
+<!-- - Usando "feed-forward" podemos ir calculando la devianza. -->
+
 
 Por ejemplo:
 ```{r}
@@ -235,6 +242,7 @@ Los coeficientes estimados, que en este caso muchas veces se llaman
 ```{r}
 beta %>% round(2)
 ```
+<!-- - Aquí vemos que los coeficientes están demasiado grandes y pueden requerir regularización. -->
 
 que parecen ser muy grandes.  Igualmente, de la figura
 vemos que el ajuste no parece ser muy estable (esto se puede
@@ -288,6 +296,8 @@ ejemplo_mod %>%
   layer_dense(units = 1,
     activation = "sigmoid", kernel_regularizer = regularizer_l2(0.0005))
 ```
+<!-- - Aquí se están especificando las capas de la red neuronal. -->
+
 
 ```{r}
 x_mat <- as.matrix(datos$x_1, ncol = 1)
@@ -300,6 +310,8 @@ historia <- ejemplo_mod %>%
   fit(x_mat, y,
       batch_size = nrow(x_mat), epochs = 3000, verbose = 0)
 ```
+<!-- - El optimizador "sgd" es descenso en gradiente estocástico. -->
+<!-- - El batch size se refiere al número de datos que hay que tomar para calcular el gradiente. -->
 
 Después de verificar convergencia (chécalo examinando la variable
 *historia*), graficamos para ver que obtuvimos resultados similares:
