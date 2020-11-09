@@ -15,6 +15,7 @@ son modificaciones de nuestro algoritmo de descenso en gradiente. Antes de prese
 las razones para usarlo, veremos cómo funciona para problemas con regresión
 lineal o logística.
 
+<!-- - La idea general es que no necesitas todos los datos para caluclar el gradiente. Puedes usar solo una parte de los datos para lograrlo. -->
 
 ```{block2, type='comentario'}
 En **descenso estocástico por minilotes**, el cálculo del gradiente se hace sobre una submuestra
@@ -32,17 +33,24 @@ Antes de escribir el algoritmo mostramos una implementación para regresión log
 Usamos las mismas funciones para calcular devianza y gradiente.
 
 ```{r, message=FALSE, warning = FALSE}
+
 h <- function(x){1/(1+exp(-x))}
+
 # la devianza es la misma
 devianza_calc <- function(x, y){
+  
   dev_fun <- function(beta){
     p_beta <- h(as.matrix(cbind(1, x)) %*% beta) 
    -2 * mean(y * log(p_beta) + (1 - y) * log(1 - p_beta))
   }
+  
   dev_fun
 }
+
+
 # el cálculo del gradiente es el mismo, pero x_ent y y_ent serán diferentes
 grad_calc <- function(x_ent, y_ent){
+  
   salida_grad <- function(beta){
     p_beta <- h(as.matrix(cbind(1, x_ent)) %*% beta) 
     e <- y_ent - p_beta
@@ -50,8 +58,11 @@ grad_calc <- function(x_ent, y_ent){
     names(grad_out) <- c('Intercept', colnames(x_ent))
     grad_out
   }
+  
   salida_grad
+  
 }
+
 ```
 
 Y comparamos los dos algoritmos:
@@ -168,7 +179,9 @@ g_de <- ggplot(estocastico, aes(x = beta_1, y = beta_2)) +
 animate(g_de, duration = 10)
 ```
 
-
+<!-- - Con descenso estocástico haces más interaciones chicas que te acercan al resultado. -->
+<!-- - Hay muchas formas de detener el descenso estocástico: -->
+<!--   - Ir reduciendo gradualmente la tasa de aprendizaje. -->
 
 Podemos ver cómo se ve la devianza de entrenamiento:
 
@@ -235,7 +248,9 @@ de más, por las razones expuestas en los incisos anteriores, y tengamos menos
 iteraciones en el mismo tiempo. El mejor punto está entre minilotes demasiado
 chicos (no aprovechamos paralelismo) o demasiado grande (hacemos demasiado trabajo
 por iteración).
-
+<!-- - Si haces lotes muy chicos te la pasas acomodando datos y jalándolos de memoria. El overhead del cálculo es muy grande. -->
+  <!-- - Van tamaños de 10 a 5,000 (este último para millones de datos.) -->
+<!-- - Si tomas lotes muy grandes, estás haciendo demasiado trabajo del cálculo. -->
 
 4.La propiedad más importante de descenso estocástico en minilotes es que su convergencia no depende del tamaño del conjunto de entrenamiento, es decir,
 el 
@@ -245,6 +260,7 @@ buenos ajustes
 incluso con tamaños muy grandes de conjuntos de entrenamiento (por ejemplo, antes
 de procesar todos los datos de entrenamiento). Descenso estocástico *escala* bien
 en este sentido: el factor limitante es el tamaño de minilote y el número de iteraciones.
+<!-- - Como cada iteración se hace con el mismo tamaño de lote, por lo que cada iteración tomará el mismo tiempo. -->
 
 5. Es importante permutar al azar los datos antes de hacer los minibatches,
 pues órdenes naturales en los datos pueden afectar la convergencia. Se ha observado
@@ -398,6 +414,10 @@ lugar con función pérdida alta (sobreajusta rápidamente).
 ```
 
 ### Momento
+
+<!-- - La idea es que podemos promediar las interacciones ateriores para ajustar la nueva. -->
+<!-- - En términos físicos sería como una pelotita que va cayendo y lleva velocidad. La nueva iteración sería como un nuevo golpecito.  -->
+<!-- - Esto nos dará como resultado un camino menos caótico, la trayectoria se vuelve más limpia. -->
 
 También es posible utilizar una idea adicional que acelera
 la convergencia. La idea es que muchas veces la aleatoriedad
@@ -688,6 +708,14 @@ prop.table(tab_confusion, 2)
 
 ## Activaciones relu
 
+<!-- - Significa unidad con rectificación lineal. -->
+<!-- - La idea de la relu es que se desactiva en valores negativos. -->
+<!-- - La ventaja es que la derivada es muy fácil de calcular. -->
+<!--   - Recordemos que necesitamos la derivada para el backpropagation. -->
+<!-- - Un problema de la sigmoidal es que la dervada en los extremos es muy cercana a cero. -->
+  <!-- - Con la "relu" no tienes problema de las derivadas similares a cero en los extremos. -->
+  <!-- - El problema de los ceros extremos se le llama saturación de unidades. -->
+
 Recientemente se ha descubierto (en gran parte empíricamente)
 que hay una unidad más conveniente para las
 activaciones de las unidades, en lugar de la función sigmoide
@@ -715,6 +743,8 @@ curve(h_logistica, add=T, col='red')
 
 ```
 
+<!-- - En rojo vemos la sigmoidal (que habíamos estado viendo). -->
+<!-- - La relu es la que está en negro. -->
 
 La razón del exito de estas activaciones no está del todo clara, aunque
 generalmente se cita el hecho de que una unidad saturada (valores de entrada
@@ -760,6 +790,14 @@ score
 
 
 ## Dropout para regularización
+
+<!-- - Lo que hace es que restringe en cada iteración el modelo al azar. -->
+<!-- - Se pueden eliminar más de una neurona a la vez. -->
+<!-- - Se quiere hacer un modelo simple, por lo que quitas ciertas unidades al azar. Se reduce varianza o sobreajuste. -->
+<!-- - Cuando usas dropout vemos en el ejemplo que la red aprende mejor los patrones importantes de lo que estmos buscando. -->
+  <!-- - Esto debido a que no estamos dejando que se realice sobreajuste. -->
+<!-- - Con el dropout obligamos a que las unidades trabajen por separado; que calculen algo importante por su cuenta. Porque las fuimos apagando en el entrenamiento. -->
+<!-- - Cada interación tiene una arquitectura distinta. El resultado es el promedio de los distintos modelos. -->
 
 Un método más nuevo y exitoso para regularizar es el *dropout*. Consiste en perturbar
 la red en cada pasada de entrenamiento de minibatch (feed-forward y backprop), eliminando

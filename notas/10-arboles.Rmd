@@ -1,5 +1,11 @@
 # Métodos basados en árboles
 
+<!-- - Redes neuronales tienen su nicho: imágenes, texto, audio. -->
+<!--   - Necesitas muchos datos. -->
+<!-- - Árboles funciona bien para problemas más generales donde tienes menos datos. -->
+<!-- - Los árboles es la misma idea de encontrar distintas interacciones entre variables de entrada. -->
+<!--   - CHAID -> Automatic Interacion Detector. -->
+
 Los métodos basados en árboles son de un distinto tipo a redes neuronales y 
 regresión. En redes neuronales y regresión, los modelos que usamos son
 *paramétricos*, en el sentido de que están definidos por un número fijo
@@ -39,6 +45,10 @@ knitr::include_graphics('./figuras/arboles_1.png')
 install.packages(c("baguette", "rpart.plot", "doParallel", "doFuture"))
 ```
 
+<!-- - Aquí vemos distintas formas de definir árboles de decisiones para llegar a un resultado. -->
+  <!-- - Vemos que hay atributos que se vuelven relevantes en ciertos contextos. -->
+<!-- - Puedes capturar relaciones no lineales cortando en distintas ramas. -->
+
 - Con este árbol podemos clasificar nuevos hogares.
 - Nótese que los árboles pueden capturar interacciones entre las
 variables de entradas. En nuestro ejemplo ficticio, "automóvil" nos
@@ -64,6 +74,8 @@ Por ejemplo:
 knitr::include_graphics('./figuras/arboles_2.png')
 ```
 
+<!-- - Aquí vemos como se dividen distintas regiones para hacer predicciones. -->
+
 - El proceso de partición binaria recursiva (con una entrada a la vez)
 puede representarse mediante árboles binarios.
 - Los nodos terminales representan a la partición obtenida.
@@ -72,10 +84,14 @@ Para definir el proceso de construcción de los árboles, debemos definir:
 
 1. ¿Cómo escoger las particiones? Idea: buscar hacer los nodos sucesivamente
 más puros (que una sola clase domine).
+  <!-- - Esto es un problema de clasificación. -->
+  <!-- - Buscas eliminar las impurezas. -->
 2. ¿Cuándo declarar a un nodo como terminal? ¿Cuándo particionar más profundamente? Idea: dependiendo de la aplicación, buscamos hacer árboles
+  <!-- - Crear un árbol grande y después pódalo. -->
 chicos, o en otras árboles grandes que después podamos para no sobreajustar.
 3. ¿Cómo hacer predicciones en nodos terminales? Idea: escoger la clase más
 común en cada nodo terminal (la de máxima probabilidad).
+  <!-- - Ver cuántas clases hay en cada nodo y después eliges. -->
 
 
 ### Tipos de partición
@@ -96,7 +112,10 @@ clases lo mejor que se pueda (sin considerar qué pasa en cortes hechos
 más adelante). En un nodo dado, escogemos la partición que 
 **reduce lo más posible su impureza**.
 
+
 ### Medidas de impureza
+
+<!-- - Queremos que los nodos tengan solo de un clase. -->
 
 Consideramos un nodo $t$ de un árbol $T$, y sean $p_1(t),\ldots, p_K(t)$ las
 proporciones de casos de $t$ que caen en cada categoría.
@@ -191,7 +210,7 @@ Y cuando utilizamos los árboles por sí solos para hacer predicciones:
 - Podemos usar el método CART de Breiman, que consiste en construir un árbol
 grande y luego podar al tamaño correcto.
 ```
-
+<!-- - El método de CART implica hacer un árbol enorme, intentar que los nodos queden puros, después vas podando. -->
 
 #### Ejemplo {-}
 
