@@ -1300,6 +1300,11 @@ con variables correlacionadas.
 
 Para evaluar un modelo dado, el segundo enfoque es mejor y se puede intentar de varias maneras. Para modelos basados en árboles, por ejemplo, podríamos ver qué pasa con las predicciones, por ejemplo, cuando cada vez que vemos la variable $x$ en un nodo escogemos
 una de las ramas al azar, en lugar de utilizar el valor real de $x$.
+<!-- - Este es un enfoque más útil porque... (importancia basada en permutaciones). -->
+<!-- - En el método de árboles podemos ignorar la información que tenemos de una variable y poner a prueba su "importancia". Dos caminos que podríamos seguir: -->
+<!--     - Permutar al azar la columna de la variable. -->
+<!--     - Hacer la división del árbol de manerea aleatoria y ver qué pasa con la clasificación. -->
+<!-- - Debemos usar los datos oob (out of bag) que son los que no utilizó el árbol. -->
 
 Una manera de implementar esto es el siguiente: 
 

@@ -269,6 +269,8 @@ Gradient boosting es una técnica general para funciones de pérdida
 generales.Regresamos entonces a nuestro problema original
 
 $$(\beta_m, b_m) = argmin_{T} \sum_{i=1}^N L(y^{(i)}, f_{m-1}(x^{(i)}) + T(x^{(i)}))$$
+<!-- - La función de pérdida es complicada. -->
+<!-- - Para no resolver directamente, usamos el gradiente de la pérdida. -->
 
 La pregunta es: ¿hacia dónde tenemos qué mover la predicción de
 $f_{m-1}(x^{(i)})$ sumando
